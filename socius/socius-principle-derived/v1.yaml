@@ -1,0 +1,42 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: https://schemas.cavatinasolutions.com/socius/socius-principle-derived/v1.yaml
+$comment: "1.0"
+title: Socius Principle Derived
+allOf:
+- $ref: https://schemas.cavatinasolutions.com/socius/socius-artifact/v1.yaml
+type: object
+required:
+- scope
+- statement
+- derived_from
+properties:
+  schema:
+    const: socius-principle-derived/v1
+  scope:
+    type: array
+    items:
+      type: string
+    description: Engineering domains where this Derived Principle applies.
+  statement:
+    type: string
+    description: The enduring engineering principle.
+  rationale:
+    type: string
+    description: Engineering reasoning that explains why this principle exists.
+  internal_expression:
+    type: string
+    description: How the principle is expressed within the company and among team members.
+  external_expression:
+    type: string
+    description: How the principle is expressed in interactions with customers, clients, partners, or other external stakeholders.
+  derived_from:
+    type: array
+    items:
+      type: string
+    description: IDs of Core Principles this Derived Principle builds upon.
+  implications:
+    type: array
+    items:
+      type: string
+    description: Important implications that naturally follow from this principle.
+unevaluatedProperties: false

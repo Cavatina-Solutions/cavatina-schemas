@@ -1,0 +1,65 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: https://schemas.cavatinasolutions.com/socius/socius-operating-context/v1.yaml
+$comment: "1.0"
+title: Socius Operating Context
+allOf:
+- $ref: https://schemas.cavatinasolutions.com/socius/socius-artifact/v1.yaml
+type: object
+required:
+- date
+- scope
+- subject
+- measurements
+properties:
+  schema:
+    const: socius-operating-context/v1
+  date:
+    type: string
+    description: Date the operating context snapshot was recorded or last materially updated.
+  scope:
+    type: array
+    items:
+      type: string
+    description: Organizational or engineering scope this operating context applies to.
+  subject:
+    type: string
+    description: The part of the operating environment being described.
+  measurements:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the measurement or observed fact.
+        value:
+          type: string
+          description: Current value of the measurement or observed fact.
+        unit:
+          type: string
+          description: Unit of measurement, when applicable.
+        source:
+          type: string
+          description: Source of the measurement or observation.
+        observed_at:
+          type: string
+          description: Date or time the value was observed, when different from the entry date.
+      additionalProperties: false
+    description: Structured observations, metrics, or facts describing the current state of the subject.
+  assessment:
+    type: string
+    description: Concise interpretation of what the measurements indicate about the current operating environment.
+  re_evaluate_when:
+    type: array
+    items:
+      type: string
+    description: Conditions, signals, or future changes that should prompt this operating context to be re-evaluated.
+  supersedes:
+    type: array
+    items:
+      type: string
+    description: IDs of earlier Operating Context entries replaced or materially changed by this entry.
+  superseded_by:
+    type: string
+    description: ID of a later Operating Context entry that replaces or materially changes this entry.
+unevaluatedProperties: false

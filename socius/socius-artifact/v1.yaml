@@ -1,0 +1,25 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: https://schemas.cavatinasolutions.com/socius/socius-artifact/v1.yaml
+$comment: "1.0"
+title: Socius Artifact
+description: Base schema for Cavatina engineering knowledge artifacts.
+type: object
+required:
+- schema
+- id
+- title
+- summary
+properties:
+  schema:
+    type: string
+    description: Schema version.
+    pattern: ^socius-[a-z0-9-]+/v[0-9]+$
+  id:
+    type: string
+    description: Stable unique identifier.
+  title:
+    type: string
+    description: Human-readable title.
+  summary:
+    type: string
+    description: A few sentence overview of the artifact. Not the actual full content.

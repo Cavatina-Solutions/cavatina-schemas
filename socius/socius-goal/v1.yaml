@@ -1,0 +1,46 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: https://schemas.cavatinasolutions.com/socius/socius-goal/v1.yaml
+$comment: "1.0"
+title: Socius Goal
+allOf:
+- $ref: https://schemas.cavatinasolutions.com/socius/socius-artifact/v1.yaml
+type: object
+required:
+- parent_strategy
+- objective
+- approach
+- success_criteria
+properties:
+  schema:
+    const: socius-goal/v1
+  parent_strategy:
+    type: string
+    description: ID of the Engineering Strategy this goal belongs to.
+  objective:
+    type: string
+    description: The engineering outcome this goal is intended to achieve.
+  approach:
+    type: string
+    description: The approach the team will take to achieve the objective.
+  success_criteria:
+    type: array
+    items:
+      type: string
+    description: Measurable indicators used to evaluate whether the goal has been achieved.
+  rationale:
+    type: string
+    description: Engineering reasoning behind establishing this goal.
+  re_evaluate_when:
+    type: array
+    items:
+      type: string
+    description: Conditions, signals, or future changes that should prompt this goal to be re-evaluated.
+  supersedes:
+    type: array
+    items:
+      type: string
+    description: IDs of earlier Goal entries replaced or materially changed by this goal.
+  superseded_by:
+    type: string
+    description: ID of a later Goal entry that replaces or materially changes this goal.
+unevaluatedProperties: false

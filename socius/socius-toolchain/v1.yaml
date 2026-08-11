@@ -1,0 +1,56 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: https://schemas.cavatinasolutions.com/socius/socius-toolchain/v1.yaml
+$comment: "1.0"
+title: Socius Toolchain
+allOf:
+- $ref: https://schemas.cavatinasolutions.com/socius/socius-artifact/v1.yaml
+type: object
+required:
+- tools
+properties:
+  schema:
+    const: socius-toolchain/v1
+  tools:
+    type: array
+    items:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Stable identifier for the tool within the toolchain. Also identifies the tool's canonical configuration directory when one exists.
+        description:
+          type: string
+          description: Role of the tool within the toolchain and relevant context about its expected use.
+        version_policy:
+          type: object
+          description: Version requirements for the tool. When omitted, the toolchain does not impose version-level requirements.
+          properties:
+            target:
+              type: array
+              items:
+                type: string
+              description: Target versions or version expressions considered fully compliant.
+            tolerated:
+              type: array
+              items:
+                type: string
+              description: Non-target versions or version expressions that are explicitly permitted.
+          required:
+          - target
+          additionalProperties: false
+        exceptions:
+          type: array
+          items:
+            type: object
+            properties:
+              condition:
+                type: string
+                description: Condition under which the exception applies.
+              expectation:
+                type: string
+                description: Expectation that applies while operating under the exception.
+            additionalProperties: false
+          description: Explicit circumstances under which deviation from the required tool is permitted.
+      additionalProperties: false
+    description: Tools that comprise the toolchain. Every listed tool is required unless an applicable exception explicitly permits deviation.
+unevaluatedProperties: false

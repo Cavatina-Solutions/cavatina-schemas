@@ -1,0 +1,42 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: https://schemas.cavatinasolutions.com/socius/socius-strategy/v1.yaml
+$comment: "1.0"
+title: Socius Strategy
+allOf:
+- $ref: https://schemas.cavatinasolutions.com/socius/socius-artifact/v1.yaml
+type: object
+required:
+- strategy
+properties:
+  schema:
+    const: socius-strategy/v1
+  strategy:
+    type: string
+    description: The team's intentional engineering direction or posture.
+  guided_by_principles:
+    type: array
+    items:
+      type: string
+    description: IDs of Engineering Principles that guide this strategy.
+  informed_by_operating_context:
+    type: array
+    items:
+      type: string
+    description: IDs of Operating Context entries that informed this strategy.
+  rationale:
+    type: string
+    description: Engineering reasoning behind adopting this strategy.
+  re_evaluate_when:
+    type: array
+    items:
+      type: string
+    description: Conditions, signals, or future changes that should prompt this strategy to be re-evaluated.
+  supersedes:
+    type: array
+    items:
+      type: string
+    description: IDs of earlier Strategy entries replaced or materially changed by this strategy.
+  superseded_by:
+    type: string
+    description: ID of a later Strategy entry that replaces or materially changes this strategy.
+unevaluatedProperties: false

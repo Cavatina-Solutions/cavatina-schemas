@@ -1,0 +1,97 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: https://schemas.cavatinasolutions.com/socius/socius-decision/v1.yaml
+$comment: "1.0"
+title: Socius Decision
+allOf:
+- $ref: https://schemas.cavatinasolutions.com/socius/socius-artifact/v1.yaml
+type: object
+required:
+- date
+- objective
+- decision
+- rationale
+properties:
+  schema:
+    const: socius-decision/v1
+  date:
+    type: string
+    description: Date the decision was made.
+  objective:
+    type: string
+    description: Problem, goal, or question the decision is intended to address.
+  decision:
+    type: string
+    description: The chosen approach.
+  rationale:
+    type: string
+    description: Reasoning that led to the selected decision.
+  background_context:
+    type: string
+    description: Additional background required to understand the decision.
+  options_considered:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Human-readable name of the option.
+        summary:
+          type: string
+          description: Brief description of the option.
+        pros:
+          type: array
+          items:
+            type: string
+          description: Advantages of the option.
+        cons:
+          type: array
+          items:
+            type: string
+          description: Disadvantages of the option.
+      additionalProperties: false
+    description: Options evaluated during the decision-making process.
+  consequences:
+    type: array
+    items:
+      type: string
+    description: Expected effects, tradeoffs, follow-up work, or other implications resulting from the decision.
+  reconsider_when:
+    type: array
+    items:
+      type: string
+    description: Conditions, signals, or future requirements that should prompt the team to revisit this decision.
+  guided_by_principles:
+    type: array
+    items:
+      type: string
+    description: IDs of the Engineering Principles that guided this decision.
+  informed_by_operating_context:
+    type: array
+    items:
+      type: string
+    description: IDs of the Operating Context entries that informed this decision.
+  driven_by_strategy:
+    type: array
+    items:
+      type: string
+    description: IDs of the Engineering Strategy entries that motivated this decision.
+  driven_by_goal:
+    type: array
+    items:
+      type: string
+    description: IDs of the Engineering Goal entries that motivated this decision.
+  resulting_standards:
+    type: array
+    items:
+      type: string
+    description: IDs of the Engineering Standards that were created or materially updated as a result of this decision.
+  supersedes:
+    type: array
+    items:
+      type: string
+    description: IDs of earlier engineering decisions replaced or materially changed by this decision.
+  superseded_by:
+    type: string
+    description: ID of a later engineering decision that replaces or materially changes this decision.
+unevaluatedProperties: false

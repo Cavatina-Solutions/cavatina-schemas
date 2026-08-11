@@ -1,0 +1,49 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: https://schemas.cavatinasolutions.com/socius/socius-standard/v1.yaml
+$comment: "1.0"
+title: Socius Standard
+allOf:
+- $ref: https://schemas.cavatinasolutions.com/socius/socius-artifact/v1.yaml
+type: object
+required:
+- scope
+- rule
+- apply_when
+- do_not_apply_when
+properties:
+  schema:
+    const: socius-standard/v1
+  scope:
+    type: array
+    items:
+      type: string
+    description: Engineering domains affected by the standard.
+  rule:
+    type: string
+    description: The single engineering standard being defined.
+  apply_when:
+    type: array
+    items:
+      type: string
+    description: Conditions that indicate the engineering standard should be applied.
+  do_not_apply_when:
+    type: array
+    items:
+      type: string
+    description: Conditions that indicate the engineering standard is outside its intended scope and another standard or approach should be considered.
+  exceptions:
+    type: array
+    items:
+      type: string
+    description: Legitimate exceptions where the rule should not be followed.
+  related_standards:
+    type: array
+    items:
+      type: string
+    description: Related Engineering Standard IDs (must exist).
+  notes:
+    type: array
+    items:
+      type: string
+    description: Concise implementation notes.
+unevaluatedProperties: false
