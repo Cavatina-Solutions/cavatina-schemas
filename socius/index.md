@@ -49,22 +49,29 @@ Neither base closes with `unevaluatedProperties`, and neither should. A base tha
 | `socius-decision` | ✓ | A specific choice, with `options_considered`, `rationale`, and `consequences` |
 | `socius-standard` | ✓ | A single enforceable `rule`, with `apply_when` / `do_not_apply_when` |
 | `socius-guidance` | | Explanatory support for exactly one standard (`supports_standard`) |
-| `socius-jargon` | ✓ | Canonical terms and their definitions |
 | `socius-toolchain` | ✓ | Required tools, version policy, and permitted exceptions |
+| `socius-term` | ✓ | A defined `term` and its `definition` |
+| `socius-alias` | ✓ | An alternate name that `resolves_to` another artifact |
+| `socius-organization` | | A named organization and its `relationships` to other organizations |
+| `socius-person` | | A named person and their organizational `affiliations` |
 
 Each defines the structure unique to its kind of knowledge — a principle has a `statement`, an operating context entry carries `measurements`, a decision records a `decision` and its `rationale`, a standard defines a `rule`.
 
 Roughly upstream to downstream: principles and operating context feed strategy; strategy drives goals and decisions; decisions produce standards; standards get guidance.
 
+The last four are **vocabulary**. `socius-term` and `socius-alias` record what a word means and what a shorthand expands to; `socius-organization` and `socius-person` name the entities those words refer to. They're knowledge like everything else here — the difference is structural. Every other type derives from something: strategy from principles, goals from strategy, standards from decisions. Vocabulary derives from nothing and feeds nothing. It's what the rest is written in terms of.
+
 ## Scope
 
 Most artifacts describe knowledge that applies somewhere in particular. `socius-scoped-artifact` defines the three fields that say where:
 
-- `organization` — the ID of the organization the artifact pertains to, or `shared`
+- `organization` — the `id` of a `socius-organization` artifact, or `shared`
 - `project` — the ID of the project the artifact pertains to, or `shared`
 - `stack` — the stack the artifact pertains to, or `general`
 
 All three are required on every scoped type. **Scope is always stated, never inferred from absence** — an artifact that applies everywhere says so with `shared` / `shared` / `general` rather than by leaving the fields out.
+
+Only `organization` names a modeled artifact. `project` and `stack` are free strings whose values are a matter of consumer convention; nothing here enumerates the valid ones.
 
 Scope is inherited and never redeclared: a type gets these fields by `allOf`-ref'ing `socius-scoped-artifact`, and no type defines them itself. Because concrete types close with `unevaluatedProperties: false`, the types that don't inherit scope can't carry it at all — an `organization` on a core principle is *rejected*, not ignored. Whether a kind of artifact can be scoped is therefore part of the contract, not a convention to be remembered.
 
@@ -72,10 +79,11 @@ The unscoped types are unscoped deliberately:
 
 - `socius-principle-core` and `socius-principle-derived` — principles are what the company believes. They don't vary by organization, project, or stack.
 - `socius-guidance` — supports exactly one standard and takes that standard's scope. Carrying its own would let the two drift.
+- `socius-organization` and `socius-person` — identity records for the entities scope itself refers to. An organization isn't scoped to an organization; it *is* one.
 
 ### Category is not scope
 
-`socius-standard` and `socius-principle-derived` each carry a `category`. It's taxonomy — a way to group artifacts of the same kind — and says nothing about where the artifact applies. A derived principle's `category` may well hold something stack-shaped in practice (`backend`, say), but no schema treats it as scope, and consumers shouldn't either.
+`socius-standard`, `socius-principle-derived`, and `socius-term` each carry a `category`. It's taxonomy — a way to group artifacts of the same kind — and says nothing about where the artifact applies. A derived principle's `category` may well hold something stack-shaped in practice (`backend`, say), but no schema treats it as scope, and consumers shouldn't either.
 
 ## Composition
 
@@ -100,7 +108,7 @@ That identifier names both the artifact type and the version of its contract, so
 
 ## Linking is by ID, not `$ref`
 
-Fields like `guided_by_principles`, `derived_from`, `parent_strategy`, `supports_standard`, `informed_by_operating_context`, `resulting_standards`, and `supersedes` / `superseded_by` hold the plain `id` of another artifact as a string.
+Fields like `guided_by_principles`, `derived_from`, `parent_strategy`, `supports_standard`, `informed_by_operating_context`, `resulting_standards`, and `supersedes` / `superseded_by` hold the plain `id` of another artifact as a string. So do the vocabulary links — `socius-alias`'s `resolves_to.id`, `socius-person`'s `affiliations[].organization`, `socius-organization`'s `relationships[].organization` — and the `organization` scope field itself.
 
 JSON Schema can't check that those IDs resolve, so **referential integrity is a consumer-side concern**. Nothing here catches a dangling reference, and back-links — `derived_principles` on a core principle versus `derived_from` on the derived one — have to be kept in sync by hand.
 
