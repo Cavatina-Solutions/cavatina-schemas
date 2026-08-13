@@ -22,46 +22,71 @@ socius/<artifact-type>/v<N>.yaml
 
 Each file's `$id` is its published URL, `https://schemas.cavatinasolutions.com/socius/<artifact-type>/v<N>.yaml`. Minor versions live inside the file rather than in the path — see [Versioning](../README.md#versioning).
 
-## The base artifact
+## Base schemas
 
-`socius-artifact` defines the properties common to every Socius artifact:
+Two abstract schemas hold the properties shared across artifact types. Both are abstract — nothing declares itself as either one, and every concrete type extends one of them.
+
+`socius-artifact` defines what every artifact carries, without exception:
 
 - `schema` — identifies the artifact's contract and version
 - `id` — stable unique identifier
 - `title` — human-readable title
 - `summary` — a concise overview of the artifact, **not** its full content
 
-It's abstract — nothing declares itself a `socius-artifact`. Every concrete type extends it, so these properties stay defined in one place rather than being repeated in every schema.
+`socius-scoped-artifact` extends `socius-artifact` and adds the [scope fields](#scope). A type that carries scope extends this rather than the base directly, and so gets both sets of properties.
+
+Neither base closes with `unevaluatedProperties`, and neither should. A base that closed itself would reject the properties its own extensions add — only concrete types close.
 
 ## Artifact types
 
-| Type | Role |
-| --- | --- |
-| `socius-principle-core` | Enduring, company-wide engineering principles |
-| `socius-principle-derived` | Domain-scoped principles built on core ones (`derived_from`) |
-| `socius-operating-context` | Dated, measurement-backed snapshots of the current environment |
-| `socius-strategy` | Intentional engineering direction, guided by principles and operating context |
-| `socius-goal` | A concrete outcome under a `parent_strategy`, with `success_criteria` |
-| `socius-decision` | A specific choice, with `options_considered`, `rationale`, and `consequences` |
-| `socius-standard` | A single enforceable `rule`, with `apply_when` / `do_not_apply_when` |
-| `socius-guidance` | Explanatory support for exactly one standard (`supports_standard`) |
-| `socius-jargon` | Canonical terms and their definitions |
-| `socius-toolchain` | Required tools, version policy, and permitted exceptions |
+| Type | Scoped | Role |
+| --- | :-: | --- |
+| `socius-principle-core` | | Enduring, company-wide engineering principles |
+| `socius-principle-derived` | | Narrower principles built on core ones (`derived_from`) |
+| `socius-operating-context` | ✓ | Dated, measurement-backed snapshots of the current environment |
+| `socius-strategy` | ✓ | Intentional engineering direction, guided by principles and operating context |
+| `socius-goal` | ✓ | A concrete outcome under a `parent_strategy`, with `success_criteria` |
+| `socius-decision` | ✓ | A specific choice, with `options_considered`, `rationale`, and `consequences` |
+| `socius-standard` | ✓ | A single enforceable `rule`, with `apply_when` / `do_not_apply_when` |
+| `socius-guidance` | | Explanatory support for exactly one standard (`supports_standard`) |
+| `socius-jargon` | ✓ | Canonical terms and their definitions |
+| `socius-toolchain` | ✓ | Required tools, version policy, and permitted exceptions |
 
 Each defines the structure unique to its kind of knowledge — a principle has a `statement`, an operating context entry carries `measurements`, a decision records a `decision` and its `rationale`, a standard defines a `rule`.
 
 Roughly upstream to downstream: principles and operating context feed strategy; strategy drives goals and decisions; decisions produce standards; standards get guidance.
 
+## Scope
+
+Most artifacts describe knowledge that applies somewhere in particular. `socius-scoped-artifact` defines the three fields that say where:
+
+- `organization` — the ID of the organization the artifact pertains to, or `shared`
+- `project` — the ID of the project the artifact pertains to, or `shared`
+- `stack` — the stack the artifact pertains to, or `general`
+
+All three are required on every scoped type. **Scope is always stated, never inferred from absence** — an artifact that applies everywhere says so with `shared` / `shared` / `general` rather than by leaving the fields out.
+
+Scope is inherited and never redeclared: a type gets these fields by `allOf`-ref'ing `socius-scoped-artifact`, and no type defines them itself. Because concrete types close with `unevaluatedProperties: false`, the types that don't inherit scope can't carry it at all — an `organization` on a core principle is *rejected*, not ignored. Whether a kind of artifact can be scoped is therefore part of the contract, not a convention to be remembered.
+
+The unscoped types are unscoped deliberately:
+
+- `socius-principle-core` and `socius-principle-derived` — principles are what the company believes. They don't vary by organization, project, or stack.
+- `socius-guidance` — supports exactly one standard and takes that standard's scope. Carrying its own would let the two drift.
+
+### Category is not scope
+
+`socius-standard` and `socius-principle-derived` each carry a `category`. It's taxonomy — a way to group artifacts of the same kind — and says nothing about where the artifact applies. A derived principle's `category` may well hold something stack-shaped in practice (`backend`, say), but no schema treats it as scope, and consumers shouldn't either.
+
 ## Composition
 
 Each concrete type:
 
-1. `allOf`-refs `socius-artifact` by its canonical `$id`
+1. `allOf`-refs its base by canonical `$id` — `socius-scoped-artifact` if it carries scope, `socius-artifact` if it doesn't
 2. re-declares `schema` as a `const` — e.g. `socius-decision/v1`
 3. adds its own `required` and `properties`
 4. closes with `unevaluatedProperties: false`
 
-`unevaluatedProperties` is deliberate and load-bearing. It rejects unknown keys while still allowing the inherited base properties through the `allOf`. Using `additionalProperties: false` here would reject every inherited property instead — keep the pattern when adding a type.
+`unevaluatedProperties` is deliberate and load-bearing. It rejects unknown keys while still allowing inherited properties through the `allOf`, including those two levels up — a scoped type sees both its own properties and `socius-artifact`'s through `socius-scoped-artifact`. Using `additionalProperties: false` here would reject every inherited property instead. Keep the pattern when adding a type, and don't add it to a base.
 
 ## Identifying an artifact
 
@@ -94,5 +119,5 @@ Owned by Cavatina Solutions and its Socius Team. Changes go through PR review on
 ## Conventions
 
 - Artifact type names are prefixed `socius-`, matching the `schema` discriminator.
-- A new artifact type is a new folder here plus a row in the table above.
+- A new artifact type is a new folder here, a row in the table above, and a decision about which base it extends.
 - Schema design should reflect the ontology of the engineering knowledge being represented — not the behavior of any particular Socius agent, workflow, or consumer.

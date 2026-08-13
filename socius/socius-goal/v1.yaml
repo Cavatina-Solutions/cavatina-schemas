@@ -3,7 +3,7 @@ $id: https://schemas.cavatinasolutions.com/socius/socius-goal/v1.yaml
 $comment: "1.0"
 title: Socius Goal
 allOf:
-- $ref: https://schemas.cavatinasolutions.com/socius/socius-artifact/v1.yaml
+- $ref: https://schemas.cavatinasolutions.com/socius/socius-scoped-artifact/v1.yaml
 type: object
 required:
 - parent_strategy

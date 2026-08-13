@@ -3,11 +3,10 @@ $id: https://schemas.cavatinasolutions.com/socius/socius-operating-context/v1.ya
 $comment: "1.0"
 title: Socius Operating Context
 allOf:
-- $ref: https://schemas.cavatinasolutions.com/socius/socius-artifact/v1.yaml
+- $ref: https://schemas.cavatinasolutions.com/socius/socius-scoped-artifact/v1.yaml
 type: object
 required:
 - date
-- scope
 - subject
 - measurements
 properties:
@@ -16,11 +15,6 @@ properties:
   date:
     type: string
     description: Date the operating context snapshot was recorded or last materially updated.
-  scope:
-    type: array
-    items:
-      type: string
-    description: Organizational or engineering scope this operating context applies to.
   subject:
     type: string
     description: The part of the operating environment being described.

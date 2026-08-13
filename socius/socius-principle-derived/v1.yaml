@@ -6,17 +6,15 @@ allOf:
 - $ref: https://schemas.cavatinasolutions.com/socius/socius-artifact/v1.yaml
 type: object
 required:
-- scope
+- category
 - statement
 - derived_from
 properties:
   schema:
     const: socius-principle-derived/v1
-  scope:
-    type: array
-    items:
-      type: string
-    description: Engineering domains where this Derived Principle applies.
+  category:
+    type: string
+    description: The category that the derived principle pertains to.
   statement:
     type: string
     description: The enduring engineering principle.

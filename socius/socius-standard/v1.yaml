@@ -3,21 +3,19 @@ $id: https://schemas.cavatinasolutions.com/socius/socius-standard/v1.yaml
 $comment: "1.0"
 title: Socius Standard
 allOf:
-- $ref: https://schemas.cavatinasolutions.com/socius/socius-artifact/v1.yaml
+- $ref: https://schemas.cavatinasolutions.com/socius/socius-scoped-artifact/v1.yaml
 type: object
 required:
-- scope
+- category
 - rule
 - apply_when
 - do_not_apply_when
 properties:
   schema:
     const: socius-standard/v1
-  scope:
-    type: array
-    items:
-      type: string
-    description: Engineering domains affected by the standard.
+  category:
+    type: string
+    description: The category that the standard pertains to.
   rule:
     type: string
     description: The single engineering standard being defined.
