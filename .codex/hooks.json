@@ -1,0 +1,88 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "export CLAUDE_PROJECT_DIR=\"$(git rev-parse --show-toplevel)\"; cd \"$CLAUDE_PROJECT_DIR\" && node --import tsx socius-artifacts/toolkit/hooks/documents/hook.ts",
+            "timeout": 10,
+            "statusMessage": "Loading the documents"
+          },
+          {
+            "type": "command",
+            "command": "export CLAUDE_PROJECT_DIR=\"$(git rev-parse --show-toplevel)\"; cd \"$CLAUDE_PROJECT_DIR\" && node --import tsx socius-artifacts/toolkit/hooks/toolchain-status/hook.ts",
+            "timeout": 10,
+            "statusMessage": "Checking toolchain status"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "export CLAUDE_PROJECT_DIR=\"$(git rev-parse --show-toplevel)\"; cd \"$CLAUDE_PROJECT_DIR\" && node --import tsx socius-artifacts/toolkit/hooks/documents/hook.ts",
+            "timeout": 10,
+            "statusMessage": "Checking work items and concerns"
+          },
+          {
+            "type": "command",
+            "command": "export CLAUDE_PROJECT_DIR=\"$(git rev-parse --show-toplevel)\"; cd \"$CLAUDE_PROJECT_DIR\" && node --import tsx socius-artifacts/toolkit/hooks/round-audit/hook.ts",
+            "timeout": 60,
+            "statusMessage": "Marking where the round starts"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "^apply_patch$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "export CLAUDE_PROJECT_DIR=\"$(git rev-parse --show-toplevel)\"; cd \"$CLAUDE_PROJECT_DIR\" && node --import tsx socius-artifacts/toolkit/hooks/style-enforcement/hook.ts working-tree",
+            "timeout": 60,
+            "statusMessage": "Enforcing toolchain"
+          }
+        ]
+      },
+      {
+        "matcher": "^Bash$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "export CLAUDE_PROJECT_DIR=\"$(git rev-parse --show-toplevel)\"; cd \"$CLAUDE_PROJECT_DIR\" && node --import tsx socius-artifacts/toolkit/hooks/style-enforcement/hook.ts working-tree",
+            "timeout": 60,
+            "statusMessage": "Enforcing toolchain"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "^Bash$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "export CLAUDE_PROJECT_DIR=\"$(git rev-parse --show-toplevel)\"; cd \"$CLAUDE_PROJECT_DIR\" && node --import tsx socius-artifacts/toolkit/hooks/git-hook-guard/hook.ts",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "export CLAUDE_PROJECT_DIR=\"$(git rev-parse --show-toplevel)\"; cd \"$CLAUDE_PROJECT_DIR\" && node --import tsx socius-artifacts/toolkit/hooks/round-audit/hook.ts",
+            "timeout": 60,
+            "statusMessage": "Checking the turn"
+          }
+        ]
+      }
+    ]
+  }
+}
