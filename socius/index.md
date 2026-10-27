@@ -41,8 +41,8 @@ Neither base closes with `unevaluatedProperties`, and neither should. A base tha
 
 | Type                       | Scoped | Role                                                                          |
 | -------------------------- | :----: | ----------------------------------------------------------------------------- |
-| `socius-principle-core`    |        | Enduring, company-wide engineering principles                                 |
-| `socius-principle-derived` |        | Narrower principles built on core ones (`derived_from`)                       |
+| `socius-principle-core`    |        | Foundational organizational beliefs                                 |
+| `socius-principle-derived` |        | More specific enduring beliefs derived from Core Principles (`derived_from`)                       |
 | `socius-operating-context` |   ✓    | Dated, measurement-backed snapshots of the current environment                |
 | `socius-strategy`          |   ✓    | Intentional engineering direction, guided by principles and operating context |
 | `socius-goal`              |   ✓    | A concrete outcome under a `parent_strategy`, with `success_criteria`         |
@@ -54,6 +54,14 @@ Neither base closes with `unevaluatedProperties`, and neither should. A base tha
 | `socius-alias`             |   ✓    | An alternate name that `resolves_to` another artifact                         |
 | `socius-organization`      |        | A named organization and its `relationships` to other organizations           |
 | `socius-person`            |        | A named person and their organizational `affiliations`                        |
+
+### Principles and Standards
+
+Principles express the organization's enduring beliefs and mindset. They establish the philosophical foundation for how the organization approaches its work without necessarily prescribing a particular implementation.
+
+Standards establish authoritative expectations that contributors are required to follow within their applicable circumstances. They express specific, actionable requirements.
+
+Principles may inform Standards, but a Standard does not require a corresponding Principle. The distinction is between **what the organization believes** and **what it requires contributors to do**.
 
 Each defines the structure unique to its kind of knowledge — a principle has a `statement`, an operating context entry carries `measurements`, a decision records a `decision` and its `rationale`, a standard defines a `rule`.
 
