@@ -1,14 +1,14 @@
 $schema: https://json-schema.org/draft/2020-12/schema
 $id: https://schemas.cavatinasolutions.com/socius/socius-artifact/v1.yaml
-$comment: "1.0"
+$comment: '1.0'
 title: Socius Artifact
 description: Base schema for Cavatina engineering knowledge artifacts.
 type: object
 required:
-- schema
-- id
-- title
-- summary
+  - schema
+  - id
+  - title
+  - summary
 properties:
   schema:
     type: string

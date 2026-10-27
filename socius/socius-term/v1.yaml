@@ -1,15 +1,15 @@
 $schema: https://json-schema.org/draft/2020-12/schema
 $id: https://schemas.cavatinasolutions.com/socius/socius-term/v1.yaml
-$comment: "1.0"
+$comment: '1.0'
 title: Socius Term
 description: Defines a term used within the engineering environment.
 allOf:
-- $ref: https://schemas.cavatinasolutions.com/socius/socius-scoped-artifact/v1.yaml
+  - $ref: https://schemas.cavatinasolutions.com/socius/socius-scoped-artifact/v1.yaml
 type: object
 required:
-- term
-- definition
-- category
+  - term
+  - definition
+  - category
 properties:
   schema:
     const: socius-term/v1

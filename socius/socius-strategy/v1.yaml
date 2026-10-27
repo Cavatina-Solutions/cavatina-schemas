@@ -1,12 +1,12 @@
 $schema: https://json-schema.org/draft/2020-12/schema
 $id: https://schemas.cavatinasolutions.com/socius/socius-strategy/v1.yaml
-$comment: "1.0"
+$comment: '1.0'
 title: Socius Strategy
 allOf:
-- $ref: https://schemas.cavatinasolutions.com/socius/socius-scoped-artifact/v1.yaml
+  - $ref: https://schemas.cavatinasolutions.com/socius/socius-scoped-artifact/v1.yaml
 type: object
 required:
-- strategy
+  - strategy
 properties:
   schema:
     const: socius-strategy/v1

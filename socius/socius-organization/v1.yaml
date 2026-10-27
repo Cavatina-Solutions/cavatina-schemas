@@ -1,13 +1,13 @@
 $schema: https://json-schema.org/draft/2020-12/schema
 $id: https://schemas.cavatinasolutions.com/socius/socius-organization/v1.yaml
-$comment: "1.0"
+$comment: '1.0'
 title: Socius Organization
 description: Identifies an organization relevant to the engineering environment and its relationships to other organizations.
 allOf:
-- $ref: https://schemas.cavatinasolutions.com/socius/socius-artifact/v1.yaml
+  - $ref: https://schemas.cavatinasolutions.com/socius/socius-artifact/v1.yaml
 type: object
 required:
-- name
+  - name
 properties:
   schema:
     const: socius-organization/v1
@@ -23,8 +23,8 @@ properties:
     items:
       type: object
       required:
-      - organization
-      - relationship
+        - organization
+        - relationship
       properties:
         organization:
           type: string

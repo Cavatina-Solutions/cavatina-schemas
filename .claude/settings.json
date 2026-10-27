@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node --import tsx \"$CLAUDE_PROJECT_DIR/socius-artifacts/toolkit/hooks/documents/hook.ts\"",
+            "timeout": 10,
+            "statusMessage": "Loading the documents"
+          },
+          {
+            "type": "command",
+            "command": "node --import tsx \"$CLAUDE_PROJECT_DIR/socius-artifacts/toolkit/hooks/toolchain-status/hook.ts\"",
+            "timeout": 10,
+            "statusMessage": "Checking toolchain status"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node --import tsx \"$CLAUDE_PROJECT_DIR/socius-artifacts/toolkit/hooks/documents/hook.ts\"",
+            "timeout": 10,
+            "statusMessage": "Checking work items and concerns"
+          },
+          {
+            "type": "command",
+            "command": "node --import tsx \"$CLAUDE_PROJECT_DIR/socius-artifacts/toolkit/hooks/round-audit/hook.ts\"",
+            "timeout": 60,
+            "statusMessage": "Marking where the round starts"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node --import tsx \"$CLAUDE_PROJECT_DIR/socius-artifacts/toolkit/hooks/style-enforcement/hook.ts\"",
+            "timeout": 60,
+            "statusMessage": "Enforcing toolchain"
+          },
+          {
+            "type": "prompt",
+            "prompt": "You are reviewing ONE edit against this repo's self-documenting-code principles. The hook payload is: $ARGUMENTS\n\nRead tool_input.file_path and the text this edit ADDS (tool_input.new_string for Edit, tool_input.content for Write, the edits array for MultiEdit).\n\nRespond ok immediately, with no further analysis, if ANY of these hold:\n- the file is not source code (only .ts, .tsx, .js, .jsx, .cs count)\n- the edit adds no comments and no new identifier names\n\nOtherwise judge ONLY the text this edit adds. A comment is earned when it explains something the code cannot: a non-obvious WHY, a complex edge case, or a warning that stops someone undoing a deliberate decision.\n\nFail only when an ADDED comment clearly does one of these:\n- restates what the adjacent code already says, or narrates the steps it performs\n- explains a rule that a config file already defines (prettier, eslint, tsconfig, commitlint)\n- embeds a count, statistic or file tally that will go stale\n- compensates for an unclear name, where renaming or extracting a named function would serve better\n\nAlso fail if the edit introduces an abbreviated identifier name where a full word was available.\n\nBias strongly toward ok: this runs on every edit and false positives are worse than misses. Judge only what was added, never pre-existing code. When failing, quote the specific comment or name and give a one-sentence reason.",
+            "continueOnBlock": true,
+            "timeout": 45,
+            "statusMessage": "Checking comments earn their place"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node --import tsx \"$CLAUDE_PROJECT_DIR/socius-artifacts/toolkit/hooks/style-enforcement/hook.ts\" working-tree",
+            "timeout": 60,
+            "statusMessage": "Enforcing toolchain"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node --import tsx \"$CLAUDE_PROJECT_DIR/socius-artifacts/toolkit/hooks/git-hook-guard/hook.ts\"",
+            "if": "Bash(git commit *)",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node --import tsx \"$CLAUDE_PROJECT_DIR/socius-artifacts/toolkit/hooks/round-audit/hook.ts\"",
+            "timeout": 60,
+            "statusMessage": "Checking the turn"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,13 +1,13 @@
 $schema: https://json-schema.org/draft/2020-12/schema
 $id: https://schemas.cavatinasolutions.com/socius/socius-guidance/v1.yaml
-$comment: "1.0"
+$comment: '1.0'
 title: Socius Guidance
 allOf:
-- $ref: https://schemas.cavatinasolutions.com/socius/socius-artifact/v1.yaml
+  - $ref: https://schemas.cavatinasolutions.com/socius/socius-artifact/v1.yaml
 type: object
 required:
-- supports_standard
-- guidance
+  - supports_standard
+  - guidance
 properties:
   schema:
     const: socius-guidance/v1

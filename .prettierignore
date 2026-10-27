@@ -1,0 +1,10 @@
+coverage
+node_modules
+
+# Managed by yarn — reformatting fights the package manager
+package.json
+yarn.lock
+
+*.log
+
+socius-artifacts

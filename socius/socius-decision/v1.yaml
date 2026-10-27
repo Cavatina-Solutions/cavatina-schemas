@@ -1,15 +1,15 @@
 $schema: https://json-schema.org/draft/2020-12/schema
 $id: https://schemas.cavatinasolutions.com/socius/socius-decision/v1.yaml
-$comment: "1.0"
+$comment: '1.0'
 title: Socius Decision
 allOf:
-- $ref: https://schemas.cavatinasolutions.com/socius/socius-scoped-artifact/v1.yaml
+  - $ref: https://schemas.cavatinasolutions.com/socius/socius-scoped-artifact/v1.yaml
 type: object
 required:
-- date
-- objective
-- decision
-- rationale
+  - date
+  - objective
+  - decision
+  - rationale
 properties:
   schema:
     const: socius-decision/v1

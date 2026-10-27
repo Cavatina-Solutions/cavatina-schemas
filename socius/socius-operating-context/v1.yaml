@@ -1,14 +1,14 @@
 $schema: https://json-schema.org/draft/2020-12/schema
 $id: https://schemas.cavatinasolutions.com/socius/socius-operating-context/v1.yaml
-$comment: "1.0"
+$comment: '1.0'
 title: Socius Operating Context
 allOf:
-- $ref: https://schemas.cavatinasolutions.com/socius/socius-scoped-artifact/v1.yaml
+  - $ref: https://schemas.cavatinasolutions.com/socius/socius-scoped-artifact/v1.yaml
 type: object
 required:
-- date
-- subject
-- measurements
+  - date
+  - subject
+  - measurements
 properties:
   schema:
     const: socius-operating-context/v1

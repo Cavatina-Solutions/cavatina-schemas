@@ -1,15 +1,15 @@
 $schema: https://json-schema.org/draft/2020-12/schema
 $id: https://schemas.cavatinasolutions.com/socius/socius-goal/v1.yaml
-$comment: "1.0"
+$comment: '1.0'
 title: Socius Goal
 allOf:
-- $ref: https://schemas.cavatinasolutions.com/socius/socius-scoped-artifact/v1.yaml
+  - $ref: https://schemas.cavatinasolutions.com/socius/socius-scoped-artifact/v1.yaml
 type: object
 required:
-- parent_strategy
-- objective
-- approach
-- success_criteria
+  - parent_strategy
+  - objective
+  - approach
+  - success_criteria
 properties:
   schema:
     const: socius-goal/v1

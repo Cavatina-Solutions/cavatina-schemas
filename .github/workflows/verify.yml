@@ -16,17 +16,27 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          node-version: 24
-          cache: npm
+          node-version-file: .nvmrc
+          # Defaults to true, which runs `yarn cache dir` before Corepack has
+          # provisioned Yarn and so hits the runner's preinstalled Yarn 1.
+          package-manager-cache: false
 
-      - run: npm ci
+      - run: corepack enable
 
-      - name: Verify schemas
-        run: npm test
+      - uses: actions/cache@v6
+        with:
+          path: ~/.yarn/berry/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
 
-      - name: Type-check scripts
-        run: npm run typecheck
+      - name: Install
+        run: make install
+        env:
+          NPM_GITHUB_TOKEN: ${{ secrets.NPM_GITHUB_TOKEN }}
+
+      - name: Verify
+        run: make verify

@@ -16,9 +16,9 @@ The path of a schema in this repo is its path on that domain — so `socius/soci
 - **Spec version:** Every schema must conform to **JSON Schema Draft 2020-12**. Set this explicitly at the top of every file:
 
   ```yaml
-  $schema: "https://json-schema.org/draft/2020-12/schema"
-  $id: "https://schemas.cavatinasolutions.com/<domain>/<schema-name>/v1.yaml"
-  $comment: "1.0"   # minor version — see Versioning
+  $schema: 'https://json-schema.org/draft/2020-12/schema'
+  $id: 'https://schemas.cavatinasolutions.com/<domain>/<schema-name>/v1.yaml'
+  $comment: '1.0' # minor version — see Versioning
   ```
 
   As newer drafts are ratified, this repo will migrate deliberately — all schemas at once, in a single PR. Individual schemas should not silently drift to a newer draft on their own.
@@ -65,7 +65,7 @@ This keeps every version of a schema side by side under one name, makes the publ
 - **`$id` mirrors the file's path under the published domain**, so the two can always be derived from each other. A file at `project-a/customer/v1.yaml` gets:
 
   ```yaml
-  $id: "https://schemas.cavatinasolutions.com/project-a/customer/v1.yaml"
+  $id: 'https://schemas.cavatinasolutions.com/project-a/customer/v1.yaml'
   ```
 
 - Cross-schema references use full `$ref` URLs against the published domain (`https://schemas.cavatinasolutions.com/...`) rather than relative file paths, so refs resolve identically whether you're working locally or consuming the schema from anywhere else.
@@ -75,24 +75,25 @@ This keeps every version of a schema side by side under one name, makes the publ
 
 Source files are served as-is at their repo path. There's no build step.
 
-*(The actual hosting/CI setup should get documented here once it's wired up.)*
+_(The actual hosting/CI setup should get documented here once it's wired up.)_
 
 ## Verifying
 
 ```bash
-npm install
-npm test
+nvm use
+make install
+make test
 ```
 
-`npm test` checks every schema in the repo: that it parses, that it's Draft 2020-12, that it compiles with all `$ref`s resolving, that its `$id` mirrors its path, that it carries a minor version agreeing with its filename, and that its domain folder has an `index.md`. It reports everything it finds at once and exits non-zero if anything is wrong.
+`make test` checks every schema in the repo: that it parses, that it's Draft 2020-12, that it compiles with all `$ref`s resolving, that its `$id` mirrors its path, that it carries a minor version agreeing with its filename, and that its domain folder has an `index.md`. It reports everything it finds at once and exits non-zero if anything is wrong.
 
-Run it before opening a PR. CI runs it on every pull request and on pushes to `main`, so a schema that doesn't verify can't merge.
+`make verify` runs it alongside formatting, lint and the typecheck. Run that before opening a PR. CI runs it on every pull request and on pushes to `main`, so a schema that doesn't verify can't merge.
 
 ## Adding a new schema
 
 1. If this is a new domain, create a new top-level folder with an `index.md`.
 2. Add your schema — `<schema-name>/v1.yaml` if you're following the recommended layout — with `$schema`, `$id`, and `$comment` set. `$id` must match the file's path under `https://schemas.cavatinasolutions.com/`, and `$comment` starts at `"1.0"`.
-3. Run `npm test`.
+3. Run `make test`.
 4. Update the domain's `index.md` if the new schema changes how the domain's schemas fit together.
 5. Open a PR for review.
 
@@ -109,9 +110,9 @@ customer/
 `v1.yaml` is a living document that always holds the latest `1.x`. The minor is recorded in the file itself:
 
 ```yaml
-$schema: "https://json-schema.org/draft/2020-12/schema"
-$id: "https://schemas.cavatinasolutions.com/<domain>/customer/v1.yaml"
-$comment: "1.1"
+$schema: 'https://json-schema.org/draft/2020-12/schema'
+$id: 'https://schemas.cavatinasolutions.com/<domain>/customer/v1.yaml'
+$comment: '1.1'
 ```
 
 (`$comment` because it's the one place a Draft 2020-12 document can carry a note that every validator ignores — a custom keyword makes strict validators fail.)
@@ -138,7 +139,7 @@ That's the honest option while a schema is still being designed — the alternat
 
 ### Why minors aren't separate URLs
 
-Schemas here are closed — they reject properties they don't define — so a document using a property added in `1.1` is *invalid* against `1.0`. If consumers could pin to an exact minor, they'd start rejecting perfectly valid documents the moment a minor shipped.
+Schemas here are closed — they reject properties they don't define — so a document using a property added in `1.1` is _invalid_ against `1.0`. If consumers could pin to an exact minor, they'd start rejecting perfectly valid documents the moment a minor shipped.
 
 Pointing everyone at `v1` avoids that: the only thing a minor bump can do is accept more than before. The practical consequence is that **consumers should re-fetch rather than vendor a copy** — a stale cached `v1` behaves like a pin. If a consumer starts rejecting documents over an unknown property, a refresh is the first thing to check.
 
@@ -151,7 +152,7 @@ A good schema:
 - **Defines one contract.** One schema, one thing being described.
 - **Composes rather than duplicates.** If a domain has properties common to many of its schemas, factor them into a base schema and `$ref` it, instead of repeating them in every file.
 - **Requires a field only when the document would be incomplete without it.** `required` is a promise to consumers, not a wish list — over-requiring makes valid documents fail.
-- **Uses `description` to explain what a field *means*,** not how some consumer handles it. The description is the field's documentation for everyone who ever reads the schema.
+- **Uses `description` to explain what a field _means_,** not how some consumer handles it. The description is the field's documentation for everyone who ever reads the schema.
 - **States types and constraints explicitly** where the contract depends on them, and leaves them open where it doesn't.
 - **Models the domain, not a workflow.** A schema should reflect the shape of the thing being described, not the internals of whatever tool happens to consume it first. Tools change; the contract shouldn't have to.
 

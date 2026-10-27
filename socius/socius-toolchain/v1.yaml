@@ -1,12 +1,12 @@
 $schema: https://json-schema.org/draft/2020-12/schema
 $id: https://schemas.cavatinasolutions.com/socius/socius-toolchain/v1.yaml
-$comment: "1.0"
+$comment: '1.0'
 title: Socius Toolchain
 allOf:
-- $ref: https://schemas.cavatinasolutions.com/socius/socius-scoped-artifact/v1.yaml
+  - $ref: https://schemas.cavatinasolutions.com/socius/socius-scoped-artifact/v1.yaml
 type: object
 required:
-- tools
+  - tools
 properties:
   schema:
     const: socius-toolchain/v1
@@ -36,7 +36,7 @@ properties:
                 type: string
               description: Non-target versions or version expressions that are explicitly permitted.
           required:
-          - target
+            - target
           additionalProperties: false
         exceptions:
           type: array

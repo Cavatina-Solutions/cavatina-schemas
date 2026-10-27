@@ -1,14 +1,14 @@
 $schema: https://json-schema.org/draft/2020-12/schema
 $id: https://schemas.cavatinasolutions.com/socius/socius-principle-derived/v1.yaml
-$comment: "1.0"
+$comment: '1.0'
 title: Socius Principle Derived
 allOf:
-- $ref: https://schemas.cavatinasolutions.com/socius/socius-artifact/v1.yaml
+  - $ref: https://schemas.cavatinasolutions.com/socius/socius-artifact/v1.yaml
 type: object
 required:
-- category
-- statement
-- derived_from
+  - category
+  - statement
+  - derived_from
 properties:
   schema:
     const: socius-principle-derived/v1

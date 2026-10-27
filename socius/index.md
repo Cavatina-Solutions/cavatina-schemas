@@ -39,21 +39,21 @@ Neither base closes with `unevaluatedProperties`, and neither should. A base tha
 
 ## Artifact types
 
-| Type | Scoped | Role |
-| --- | :-: | --- |
-| `socius-principle-core` | | Enduring, company-wide engineering principles |
-| `socius-principle-derived` | | Narrower principles built on core ones (`derived_from`) |
-| `socius-operating-context` | ✓ | Dated, measurement-backed snapshots of the current environment |
-| `socius-strategy` | ✓ | Intentional engineering direction, guided by principles and operating context |
-| `socius-goal` | ✓ | A concrete outcome under a `parent_strategy`, with `success_criteria` |
-| `socius-decision` | ✓ | A specific choice, with `options_considered`, `rationale`, and `consequences` |
-| `socius-standard` | ✓ | A single enforceable `rule`, with `apply_when` / `do_not_apply_when` |
-| `socius-guidance` | | Explanatory support for exactly one standard (`supports_standard`) |
-| `socius-toolchain` | ✓ | Required tools, version policy, and permitted exceptions |
-| `socius-term` | ✓ | A defined `term` and its `definition` |
-| `socius-alias` | ✓ | An alternate name that `resolves_to` another artifact |
-| `socius-organization` | | A named organization and its `relationships` to other organizations |
-| `socius-person` | | A named person and their organizational `affiliations` |
+| Type                       | Scoped | Role                                                                          |
+| -------------------------- | :----: | ----------------------------------------------------------------------------- |
+| `socius-principle-core`    |        | Enduring, company-wide engineering principles                                 |
+| `socius-principle-derived` |        | Narrower principles built on core ones (`derived_from`)                       |
+| `socius-operating-context` |   ✓    | Dated, measurement-backed snapshots of the current environment                |
+| `socius-strategy`          |   ✓    | Intentional engineering direction, guided by principles and operating context |
+| `socius-goal`              |   ✓    | A concrete outcome under a `parent_strategy`, with `success_criteria`         |
+| `socius-decision`          |   ✓    | A specific choice, with `options_considered`, `rationale`, and `consequences` |
+| `socius-standard`          |   ✓    | A single enforceable `rule`, with `apply_when` / `do_not_apply_when`          |
+| `socius-guidance`          |        | Explanatory support for exactly one standard (`supports_standard`)            |
+| `socius-toolchain`         |   ✓    | Required tools, version policy, and permitted exceptions                      |
+| `socius-term`              |   ✓    | A defined `term` and its `definition`                                         |
+| `socius-alias`             |   ✓    | An alternate name that `resolves_to` another artifact                         |
+| `socius-organization`      |        | A named organization and its `relationships` to other organizations           |
+| `socius-person`            |        | A named person and their organizational `affiliations`                        |
 
 Each defines the structure unique to its kind of knowledge — a principle has a `statement`, an operating context entry carries `measurements`, a decision records a `decision` and its `rationale`, a standard defines a `rule`.
 
@@ -73,13 +73,13 @@ All three are required on every scoped type. **Scope is always stated, never inf
 
 Only `organization` names a modeled artifact. `project` and `stack` are free strings whose values are a matter of consumer convention; nothing here enumerates the valid ones.
 
-Scope is inherited and never redeclared: a type gets these fields by `allOf`-ref'ing `socius-scoped-artifact`, and no type defines them itself. Because concrete types close with `unevaluatedProperties: false`, the types that don't inherit scope can't carry it at all — an `organization` on a core principle is *rejected*, not ignored. Whether a kind of artifact can be scoped is therefore part of the contract, not a convention to be remembered.
+Scope is inherited and never redeclared: a type gets these fields by `allOf`-ref'ing `socius-scoped-artifact`, and no type defines them itself. Because concrete types close with `unevaluatedProperties: false`, the types that don't inherit scope can't carry it at all — an `organization` on a core principle is _rejected_, not ignored. Whether a kind of artifact can be scoped is therefore part of the contract, not a convention to be remembered.
 
 The unscoped types are unscoped deliberately:
 
 - `socius-principle-core` and `socius-principle-derived` — principles are what the company believes. They don't vary by organization, project, or stack.
 - `socius-guidance` — supports exactly one standard and takes that standard's scope. Carrying its own would let the two drift.
-- `socius-organization` and `socius-person` — identity records for the entities scope itself refers to. An organization isn't scoped to an organization; it *is* one.
+- `socius-organization` and `socius-person` — identity records for the entities scope itself refers to. An organization isn't scoped to an organization; it _is_ one.
 
 ### Category is not scope
 
@@ -118,7 +118,7 @@ The time-varying types — `socius-strategy`, `socius-goal`, `socius-decision`, 
 
 History is expressed by **superseding a prior artifact, not by editing it in place**. An artifact records what was true and believed when it was written; changing it retroactively destroys that record.
 
-This is a different mechanism from schema versioning: superseding replaces an *artifact*, a new `v<N>.yaml` replaces a *contract*. See [Versioning](../README.md#versioning).
+This is a different mechanism from schema versioning: superseding replaces an _artifact_, a new `v<N>.yaml` replaces a _contract_. See [Versioning](../README.md#versioning).
 
 ## Ownership
 

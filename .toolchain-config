@@ -1,0 +1,6 @@
+{
+  "toolchains": [
+    "git-hooks",
+    "make-ts-tools"
+  ]
+}

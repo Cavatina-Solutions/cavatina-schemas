@@ -1,0 +1,3 @@
+[submodule "socius-artifacts"]
+	path = socius-artifacts
+	url = https://github.com/Cavatina-Solutions/socius-artifacts.git

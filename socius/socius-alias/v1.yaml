@@ -1,14 +1,14 @@
 $schema: https://json-schema.org/draft/2020-12/schema
 $id: https://schemas.cavatinasolutions.com/socius/socius-alias/v1.yaml
-$comment: "1.0"
+$comment: '1.0'
 title: Socius Alias
 description: Defines an alternate name, abbreviation, acronym, codename, or shorthand used within the engineering environment.
 allOf:
-- $ref: https://schemas.cavatinasolutions.com/socius/socius-scoped-artifact/v1.yaml
+  - $ref: https://schemas.cavatinasolutions.com/socius/socius-scoped-artifact/v1.yaml
 type: object
 required:
-- alias
-- resolves_to
+  - alias
+  - resolves_to
 properties:
   schema:
     const: socius-alias/v1
@@ -19,15 +19,15 @@ properties:
     type: object
     description: Terminology artifact represented by the alias.
     required:
-    - type
-    - id
+      - type
+      - id
     properties:
       type:
         type: string
         enum:
-        - organization
-        - person
-        - term
+          - organization
+          - person
+          - term
         description: Type of Terminology artifact represented by the alias.
       id:
         type: string

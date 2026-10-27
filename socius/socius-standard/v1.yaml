@@ -1,15 +1,15 @@
 $schema: https://json-schema.org/draft/2020-12/schema
 $id: https://schemas.cavatinasolutions.com/socius/socius-standard/v1.yaml
-$comment: "1.0"
+$comment: '1.0'
 title: Socius Standard
 allOf:
-- $ref: https://schemas.cavatinasolutions.com/socius/socius-scoped-artifact/v1.yaml
+  - $ref: https://schemas.cavatinasolutions.com/socius/socius-scoped-artifact/v1.yaml
 type: object
 required:
-- category
-- rule
-- apply_when
-- do_not_apply_when
+  - category
+  - rule
+  - apply_when
+  - do_not_apply_when
 properties:
   schema:
     const: socius-standard/v1

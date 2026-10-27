@@ -1,0 +1,15 @@
+# Select the Node that .nvmrc pins, so the repo's scripts run under it even when the committing
+# shell defaults to another version. nvm.sh lives in different places depending on how nvm was
+# installed (git clone vs Homebrew).
+export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+for nvm_sh in "$NVM_DIR/nvm.sh" /usr/local/opt/nvm/nvm.sh /opt/homebrew/opt/nvm/nvm.sh; do
+  if [ -s "$nvm_sh" ]; then
+    . "$nvm_sh"
+    nvm use >/dev/null 2>&1 || true
+    break
+  fi
+done
+
+# Requires a `precommit` target: the quick checks only — formatting and lint, not typecheck or
+# tests. See HOW-WE-CODE, CloudOps → "Make is the interface".
+make precommit

@@ -1,12 +1,12 @@
 $schema: https://json-schema.org/draft/2020-12/schema
 $id: https://schemas.cavatinasolutions.com/socius/socius-principle-core/v1.yaml
-$comment: "1.0"
+$comment: '1.0'
 title: Socius Principle Core
 allOf:
-- $ref: https://schemas.cavatinasolutions.com/socius/socius-artifact/v1.yaml
+  - $ref: https://schemas.cavatinasolutions.com/socius/socius-artifact/v1.yaml
 type: object
 required:
-- statement
+  - statement
 properties:
   schema:
     const: socius-principle-core/v1
