@@ -20,6 +20,12 @@ properties:
       type: string
       minLength: 1
     description: Taxonomy labels for finding standards about this subject; not applicability scope.
+  apply_when:
+    type: array
+    minItems: 1
+    items:
+      type: string
+    description: Optional natural-language circumstances that further constrain when this Standard applies; interpreted by the contributor or agent.
   expectations:
     type: array
     minItems: 1
