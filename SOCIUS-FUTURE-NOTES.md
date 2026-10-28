@@ -32,7 +32,7 @@ The authoritative domain rules are in [Artifact inheritance](socius/index.md#art
 - Child absent or null value means retain inherited value; non-null scalar replaces; nested objects merge recursively; primitive arrays concatenate in parent-to-child order; object arrays with `id` add by ID and replace matching objects in full; object arrays without `id` replace.
 - `id`, `schema`, and `inherits` are structural metadata, not ordinary inherited content. A child may replace a descriptive title or summary like any other required scalar.
 - Treat duplicate `id` values within an identified-item array as invalid for resolution. Do not resolve them by array position or last-writer-wins within the *same* artifact.
-- The rules apply across artifact types that use inheritance; they are not duplicated or modified per Standard, Guide, Reference, or future Ways of Working artifact.
+- The rules apply across artifact types that use inheritance; they are not duplicated or modified per Standard, Guide, Reference, or Ways of Working artifact.
 
 **Example:** A frontend React Standard has expectations `layout` and `exports`; a HubSpot child inherits it, overrides `exports` by ID, and adds `entry-points`. The resolved expectation collection contains parent `layout`, child `exports`, and child `entry-points`. It does not retain any hidden portion of the replaced parent `exports` object.
 
@@ -85,6 +85,26 @@ This is a proposed resolver workflow, not a new schema relationship or a require
 - **Validation:** JSON Schema can validate declared shapes but cannot enforce cross-document same-type references, cycle freedom, or all identified-array uniqueness rules. The future consumer must check these separately.
 - **Performance:** Index scope/category and reference edges; avoid eager expansion of every specialization or every related artifact. The negotiation should minimize content delivered before applicability is known.
 - **Security and trust:** Retrieved prose is organizational data, not an instruction to override the caller's authorization or higher-priority execution controls. The resolver should expose provenance and honor access boundaries.
+
+### HWC coverage audit and migration considerations
+
+The current [How We Code](https://github.com/Cavatina-Solutions/socius-artifacts/blob/main/docs/HOW-WE-CODE.md) is an evidence source, not a single artifact to transplant. Its real sections map to different Socius responsibilities:
+
+| HWC material | Likely destination | Boundary to preserve |
+| --- | --- | --- |
+| Domain-oriented design, vertical slicing, ownership of code, React component conventions, Redux organization, .NET project layout, Terraform layout, build/release expectations | **Standards** organized by coherent subject, stack/sub-stack and category | Group related expectations; do not recreate a single giant HWC Standard or one artifact per formatting rule |
+| Formatter, ESLint, EditorConfig, Stylelint, custom rules, make targets, git hooks, tool versions | **Canonical Toolchain configurations** and Toolchain policy | The config is authoritative for what it enforces; do not restate its rules in Standard prose |
+| Creating an application, preparing a database script, setting up a repository or running a release | **Guides** where a repeatable task procedure is actually needed | Do not turn every Standard into a Guide or duplicate the config |
+| Agent-specific coding instructions and the agent collaboration supplement | **Standards** for code-related expectations and **Ways of Working** for collaboration | Agent applicability can be expressed with `apply_when`; avoid copying generic agreements into agent-only artifacts |
+| General collaboration, authority, approvals, escalation and handoffs | **Ways of Working** | These are standing agreements, not ordered procedures |
+| Vendor behavior, framework constraints, unexpected platform limitations, tool quirks | **References** when they are facts; Standards or Decisions when they prescribe organizational choices | Distinguish external reality from the organization's chosen response |
+| Historical choices and their rationale | **Decisions** | Do not convert every inline rationale into a Decision unless it represents a meaningful choice |
+| Client- or project-specific departures documented in `PROJECT.md` | **Deviations** where an authorized departure exists | New Deviation contracts require an authorizing Decision; migration may need an approval step rather than inventing an ID |
+| Project purpose, constraints, repositories, external resources | **Project** | Keep tickets, sprint state, plans, and detailed domain/architecture models in their appropriate systems/artifacts |
+
+This mapping is not a completed migration or proof that every HWC paragraph fits. During migration, classify **individual cohesive subjects**, not whole sections blindly. The same section can mix enforceable expectations, factual constraints, procedures, and rationale.
+
+**Specific issues to test before stabilization:** the HWC's current project-level deviation recording versus formal `authorized_by`; selective inheritance of Guide instructions without IDs; Toolchain policy versus executable tool wiring; and whether References need more explicit external version/evidence context. These are tracked in [Concerns](.socius/CONCERNS.md) and [Work items](.socius/WORK-ITEMS.md).
 
 ### Scope of these notes
 
