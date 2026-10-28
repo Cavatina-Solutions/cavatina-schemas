@@ -36,7 +36,7 @@ Test representative real material against Standards, Guides, Ways of Working, Re
 
 **Relates to:** `socius-guide`, `socius-artifact.inherits`
 
-Guide instructions now have stable IDs, so selective replacement works through universal inheritance. Determine how new child steps can be inserted between existing parent steps when `is_ordered: true`, without inventing implicit ordering from prose.
+Guide instructions now have stable IDs, so selective replacement works through universal inheritance. Guide instructions now have optional integer `order` and matching IDs merge recursively. Confirm whether missing or duplicate effective order values are errors, and whether gaps are permitted; order is not inferred from array position.
 
 ### Review inheritance validation and applicability semantics
 
@@ -44,7 +44,7 @@ Guide instructions now have stable IDs, so selective replacement works through u
 
 **Relates to:** `socius-artifact.inherits`, `apply_when`, `SOCIUS-FUTURE-NOTES.md`
 
-Test independent child validity, required scope overrides, primitive-array concatenation, same-type checks, duplicate IDs, null behavior, and the presentation of inherited applicability conditions during negotiation. Clarify how conditions are interpreted without inventing boolean semantics.
+Test default independent validation and deferred overlay validation, complete post-resolution validation, required scope inheritance, recursive identified-item merges, primitive-array concatenation, same-type checks, duplicate IDs, null behavior, and presentation of inherited applicability conditions during negotiation. Clarify how conditions are interpreted without inventing boolean semantics.
 
 ### Define deviation approval workflow and migration guidance
 
@@ -224,3 +224,11 @@ Guide instructions now require `id`, alongside `name` and `instructions`, enabli
 ### Permit decision-backed Deviations without requiring prior approval
 
 Renamed required `authorized_by` to optional `backed_by_decision`, allowing documentation before formal backing while preserving a typed Decision relationship.
+
+### Introduce deferred validation for inherited artifacts
+
+Added optional `validation_deferred` on the base artifact, requiring `inherits` when true. Documented stored-file versus resolved-artifact validation, and the need for inheritance-aware validation tooling.
+
+### Support explicit order and recursive Guide instruction overrides
+
+Added optional integer `order` to Guide instructions and revised universal identified-object inheritance to recursively merge matching IDs. Ordered Guide instructions use effective order values, not physical array positions.
