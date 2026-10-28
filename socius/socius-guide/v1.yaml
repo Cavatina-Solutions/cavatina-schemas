@@ -43,7 +43,7 @@ properties:
           description: Stable identifier for selective replacement under universal inheritance.
         order:
           type: integer
-          description: Explicit sequence position when is_ordered is true. May be inherited or changed by an identified child instruction.
+          description: Explicit sequence position for ordered Guides; effective ordered instructions must have distinct order values. May be inherited or changed by an identified child instruction.
         name:
           type: string
           minLength: 1
