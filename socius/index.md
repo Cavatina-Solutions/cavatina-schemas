@@ -55,6 +55,7 @@ Neither base closes with `unevaluatedProperties`, and neither should. A base tha
 | `socius-toolchain`         |   ✓    | Required tools, version policy, and permitted exceptions                      |
 | `socius-term`              |   ✓    | A defined `term` and its `definition`                                         |
 | `socius-alias`             |   ✓    | An alternate name that `resolves_to` another artifact                         |
+| `socius-project`           |        | Project identity, purpose, foundational context, and associated resources     |
 | `socius-organization`      |        | A named organization and its `relationships` to other organizations           |
 | `socius-person`            |        | A named person and their organizational `affiliations`                        |
 
@@ -125,6 +126,12 @@ The child's `id`, `schema`, and `inherits` are structural metadata, not inherite
 
 Inheritance composition is distinct from discovering candidates and assessing applicability. A human or agent should be able to identify relevant artifacts using structured scope, taxonomy, relationships, and any natural-language conditions. See the repository-root [Socius future notes](../SOCIUS-FUTURE-NOTES.md) for the proposed associative-resolver negotiation and delivery workflow; that tool design is not part of the schema contract.
 
+### Projects
+
+A Project is a first-class artifact describing a project's identity and durable foundational context. Its required `purpose` explains why the project exists; optional `context` captures background and premise, while `constraints` records significant boundaries. Optional `organizations` associates organization IDs with their project roles; `repositories` and `resources` link to relevant codebases and external systems (such as Jira projects/boards or Confluence spaces). `related_projects` names associated projects without implying a stronger relationship.
+
+Projects are **unscoped**: the `project` field on scoped artifacts refers to a Project's ID, but a Project is not scoped to itself. Organizational participation is represented explicitly rather than inferred from an organization scope. Projects anchor context without becoming ticket trackers, sprint logs, or containers for detailed requirements, plans, architecture, or domain models. Those concerns can be modeled separately and referenced as appropriate.
+
 ## Scope
 
 Most artifacts describe practices or context that apply somewhere in particular. `socius-scoped-artifact` defines the scope fields:
@@ -136,14 +143,14 @@ Most artifacts describe practices or context that apply somewhere in particular.
 
 The first three are required on every scoped type; `sub_stack` is optional. **The three base scope fields are always stated, never inferred from absence** — an artifact that applies everywhere says so with `shared` / `shared` / `general` rather than by leaving the fields out.
 
-Only `organization` names a currently modeled artifact. `project`, `stack`, and `sub_stack` are free strings whose values are a matter of consumer convention; nothing here enumerates the valid ones.
+`organization` and `project` can name modeled Organization and Project artifacts, respectively, while the special value `shared` denotes unrestricted scope. `stack` and `sub_stack` remain free strings whose values are a matter of consumer convention; nothing here enumerates their valid values.
 
 Scope is inherited and never redeclared: a type gets these fields by `allOf`-ref'ing `socius-scoped-artifact`, and no type defines them itself. Because concrete types close with `unevaluatedProperties: false`, the types that don't inherit scope can't carry it at all — an `organization` on a core principle is _rejected_, not ignored. Whether a kind of artifact can be scoped is therefore part of the contract, not a convention to be remembered.
 
 The unscoped types are unscoped deliberately:
 
 - `socius-principle-core` and `socius-principle-derived` — principles are what the company believes. They don't vary by organization, project, or stack.
-- `socius-organization` and `socius-person` — identity records for the entities scope itself refers to. An organization isn't scoped to an organization; it _is_ one.
+- `socius-organization`, `socius-project`, and `socius-person` — identity/context records for entities referred to by other artifacts. An organization or project isn't scoped to itself; it _is_ the entity.
 
 ### Category is not scope
 
