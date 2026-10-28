@@ -27,14 +27,31 @@ The authoritative domain rules are in [Artifact inheritance](socius/index.md#art
 
 - An explicit optional `inherits` ID on `socius-artifact`; one parent only.
 - Parent and child must have exactly the same artifact type/`schema` discriminator. A missing parent, wrong type, or cycle is a resolution error.
-- Each stored parent and child independently validates against the same schema, including required fields. Inheritance does **not** allow omitted required fields.
+- Each stored artifact normally validates independently. A child may opt into `validation_deferred: true` (only with `inherits`) and omit fields to be supplied by its parent. The resolved result **always** must validate against the full artifact-type schema.
 - Resolve oldest ancestor first and merge toward the selected child. The final artifact has the child's identity and contract.
-- Child absent or null value means retain inherited value; non-null scalar replaces; nested objects merge recursively; primitive arrays concatenate in parent-to-child order; object arrays with `id` add by ID and replace matching objects in full; object arrays without `id` replace.
+- Child absent or null value means retain inherited value; non-null scalar replaces; nested objects merge recursively; primitive arrays concatenate in parent-to-child order; object arrays with `id` add by ID and recursively merge matching objects by property; object arrays without `id` replace.
 - `id`, `schema`, and `inherits` are structural metadata, not ordinary inherited content. A child may replace a descriptive title or summary like any other required scalar.
 - Treat duplicate `id` values within an identified-item array as invalid for resolution. Do not resolve them by array position or last-writer-wins within the *same* artifact.
 - The rules apply across artifact types that use inheritance; they are not duplicated or modified per Standard, Guide, Reference, or Ways of Working artifact.
 
-**Example:** A frontend React Standard has expectations `layout` and `exports`; a HubSpot child inherits it, overrides `exports` by ID, and adds `entry-points`. The resolved expectation collection contains parent `layout`, child `exports`, and child `entry-points`. It does not retain any hidden portion of the replaced parent `exports` object.
+**Example:** A frontend React Standard has expectations `layout` and `exports`; a HubSpot child inherits it, overrides `exports` by ID, and adds `entry-points`. The resolved expectation collection contains parent `layout`, child `exports`, and child `entry-points`. It retains any parent `exports` properties the child does not specify, while replacing those it does.
+
+### Deferred validation: stored form versus resolved form
+
+Two different checks are meaningful:
+
+1. **Stored-file completeness:** Is the child independently valid under its declared concrete schema? This remains the default (`validation_deferred` omitted or `false`).
+2. **Resolved-artifact completeness:** After same-type inheritance and merging, does the effective artifact satisfy its declared concrete schema? This is mandatory even when the stored child opted into deferral.
+
+`validation_deferred: true` requires `inherits`. The child must still provide `schema`, `id`, and `inherits` to make type identification and parent lookup possible. The stored-form pass must check the types and structural integrity of properties actually supplied without rejecting missing inherited content. Then resolve the full ancestor chain and validate the resulting complete object with the ordinary concrete JSON Schema.
+
+**Important:** JSON Schema's `required` checks do not automatically become conditional because the base defines `validation_deferred`. A direct full-schema validation of a deferred, incomplete stored child may fail. An inheritance-aware validator needs a separate stored-overlay validation mode (for example, a derived validation view or a purpose-built structural pass) followed by the full post-resolution check. Do not interpret the flag as "skip all validation." A missing parent, mismatched type, cycle, invalid provided value, or incomplete merged result must fail.
+
+If the child supplies `null` as a no-op under the conceptual merge rules, the stored-overlay validation must account for that separately; ordinary non-null concrete field schemas may reject it. Whether explicit null should be supported at all remains a testable design question.
+
+**Guide example:** A parent Guide has `instructions: [{id: configure, name: Configure tooling, instructions: Set up tooling, order: 20}]`. A deferred child can supply `instructions: [{id: configure, order: 30}]`. The resolver matches the ID, preserves the name/prose, changes the order, and then validates the complete result.
+
+**Ordering:** When `is_ordered` is true, a Guide's effective instructions are sorted by integer `order` rather than physical array position. A child may alter `order` without changing prose, or prose without changing `order`. The implementation must define how it reports missing or duplicate effective order values and whether gaps are permitted; never guess an insertion point from source array position.
 
 ### Why primitive arrays concatenate
 
@@ -75,15 +92,15 @@ This is a proposed resolver workflow, not a new schema relationship or a require
 ### Open implementation questions to test
 
 - **Condition presentation across inheritance:** The first candidate list should include enough parent/child applicability context to make the selection sound. Decide whether to pre-traverse ancestors for condition summaries, or to negotiate again when newly discovered parent conditions appear.
-- **Null versus schema validation:** The conceptual merge treats child null as absence. Existing closed schemas generally reject null for typed fields; decide whether null is only a resolver-internal representation or whether schemas should explicitly permit it. Do not quietly relax the independent-validity rule.
-- **Required field composition:** Because every child must independently validate, required scalar fields (including scope) will normally replace the parent's value even when identical. This is intentional; inheritance is primarily valuable for optional fields and additive identified collections.
+- **Null versus schema validation:** The conceptual merge treats child null as absence. Concrete schemas generally reject null for typed fields; decide whether explicit null is supported by deferred stored-form validation or whether omission alone is the intended no-op.
+- **Required field composition:** Non-deferred children supply required scalars (including scope), replacing parent values. Deferred children may omit those fields and inherit them. Test both cases against the resolved concrete schema.
 - **Primitive-array duplicates:** Concatenation is the agreed rule. Whether a consumer deduplicates repeated values for display, while preserving provenance and original stored values, remains a separate projection choice. Do not silently alter the canonical merge semantics.
-- **Guide ordering:** Guide instructions now have IDs and support selective replacement, but an ordered Guide needs a deterministic insertion convention for new child steps between inherited steps. Do not silently infer positions from names or prose.
+- **Guide ordering:** Guide instructions now have IDs and optional integer `order`; resolved ordered Guides sort by `order`. Determine whether missing or duplicate effective order values are errors and how to handle ties and gaps; never infer positions from array order.
 - **Mixed object-array shapes:** Determine a reliable policy for arrays whose entries are inconsistently identified; reject ambiguous merges rather than guessing.
 - **Scope and inheritance:** A child can specialize scope (such as `sub_stack: hubspot`) while inheriting general content. The child's scope governs retrieval of that child; parent scope is not an extra hidden runtime condition unless the domain model explicitly says so.
 - **Conflict and ambiguity:** Multiple independently applicable sibling artifacts may disagree without an inheritance relationship. Do not infer a winner solely from category overlap or ordering. Expose the conflict for an appropriate decision.
 - **Errors and diagnostics:** Define useful errors for missing IDs, mismatched types, cycles, duplicate item IDs, and ambiguous selection. Preserve traceability of which source supplied each effective item.
-- **Validation:** JSON Schema can validate declared shapes but cannot enforce cross-document same-type references, cycle freedom, or all identified-array uniqueness rules. The future consumer must check these separately.
+- **Validation:** JSON Schema can validate declared shapes but cannot resolve cross-document inheritance or implement deferred overlay validation automatically. The future consumer must implement stored-overlay checks, same-type and cycle validation, and complete post-merge schema validation.
 - **Performance:** Index scope/category and reference edges; avoid eager expansion of every specialization or every related artifact. The negotiation should minimize content delivered before applicability is known.
 - **Security and trust:** Retrieved prose is organizational data, not an instruction to override the caller's authorization or higher-priority execution controls. The resolver should expose provenance and honor access boundaries.
 
