@@ -48,7 +48,6 @@ Neither base closes with `unevaluatedProperties`, and neither should. A base tha
 | `socius-goal`              |   ✓    | A concrete outcome under a `parent_strategy`, with `success_criteria`         |
 | `socius-decision`          |   ✓    | A specific choice, with `options_considered`, `rationale`, and `consequences` |
 | `socius-standard`          |   ✓    | Authoritative expectations for a cohesive subject, with optional inheritance          |
-| `socius-guidance`          |        | Explanatory support for exactly one standard (`supports_standard`)            |
 | `socius-toolchain`         |   ✓    | Required tools, version policy, and permitted exceptions                      |
 | `socius-term`              |   ✓    | A defined `term` and its `definition`                                         |
 | `socius-alias`             |   ✓    | An alternate name that `resolves_to` another artifact                         |
@@ -65,7 +64,7 @@ Principles may inform Standards, but a Standard does not require a corresponding
 
 Each defines the structure unique to its kind of knowledge — a principle has a `statement`, an operating context entry carries `measurements`, a decision records a `decision` and its `rationale`, a standard defines identifiable `expectations`.
 
-Roughly upstream to downstream: principles and operating context feed strategy; strategy drives goals and decisions; decisions produce standards; standards get guidance.
+Roughly upstream to downstream: principles and operating context feed strategy; strategy drives goals and decisions; decisions produce standards; standards express the resulting expectations.
 
 The last four are **vocabulary**. `socius-term` and `socius-alias` record what a word means and what a shorthand expands to; `socius-organization` and `socius-person` name the entities those words refer to. They're knowledge like everything else here — the difference is structural. Every other type derives from something: strategy from principles, goals from strategy, standards from decisions. Vocabulary derives from nothing and feeds nothing. It's what the rest is written in terms of.
 
@@ -73,7 +72,7 @@ The last four are **vocabulary**. `socius-term` and `socius-alias` record what a
 
 A Standard defines the organization's authoritative expectations for **one cohesive subject**. It may contain multiple related expectations, but it should not be an atomic lint rule or a catch-all document for everything about a technology. Split unrelated subjects into separate Standards.
 
-Canonical Toolchain configurations own conventions they already express and enforce, such as formatting and lint rules. Standards do not duplicate those configurations in prose. Guidance can explain a Standard, while How-To material describes a task procedure; neither changes what the Standard requires.
+Canonical Toolchain configurations own conventions they already express and enforce, such as formatting and lint rules. Standards do not duplicate those configurations in prose. How-To material describes a task procedure rather than defining the Standard's expectations.
 
 **Retrieval starts with the scoped artifact dimensions.** A consumer uses `organization`, `project`, `stack`, and optional `sub_stack` to identify candidates, including broader shared/general records as relevant. A missing `sub_stack` denotes no narrower specialization. For Standards, the required `category` array adds taxonomy labels for retrieving relevant subjects; it is not a second stack or a substitute for scope. For example, general React expectations can use `stack: frontend`, `category: [react]` without a sub-stack, while a HubSpot specialization can use `stack: frontend`, `sub_stack: hubspot`, `category: [react]`. Retrieving general React expectations should not automatically bring in every specialized HubSpot record.
 
@@ -106,7 +105,6 @@ Scope is inherited and never redeclared: a type gets these fields by `allOf`-ref
 The unscoped types are unscoped deliberately:
 
 - `socius-principle-core` and `socius-principle-derived` — principles are what the company believes. They don't vary by organization, project, or stack.
-- `socius-guidance` — supports exactly one standard and takes that standard's scope. Carrying its own would let the two drift.
 - `socius-organization` and `socius-person` — identity records for the entities scope itself refers to. An organization isn't scoped to an organization; it _is_ one.
 
 ### Category is not scope
@@ -136,7 +134,7 @@ That identifier names both the artifact type and the version of its contract, so
 
 ## Linking is by ID, not `$ref`
 
-Fields like `guided_by_principles`, `derived_from`, `parent_strategy`, `supports_standard`, `informed_by_operating_context`, `resulting_standards`, and `supersedes` / `superseded_by` hold the plain `id` of another artifact as a string. So do the vocabulary links — `socius-alias`'s `resolves_to.id`, `socius-person`'s `affiliations[].organization`, `socius-organization`'s `relationships[].organization` — and the `organization` scope field itself.
+Fields like `guided_by_principles`, `derived_from`, `parent_strategy`, `informed_by_operating_context`, `resulting_standards`, and `supersedes` / `superseded_by` hold the plain `id` of another artifact as a string. So do the vocabulary links — `socius-alias`'s `resolves_to.id`, `socius-person`'s `affiliations[].organization`, `socius-organization`'s `relationships[].organization` — and the `organization` scope field itself.
 
 JSON Schema can't check that those IDs resolve, so **referential integrity is a consumer-side concern**. Nothing here catches a dangling reference, and back-links — `derived_principles` on a core principle versus `derived_from` on the derived one — have to be kept in sync by hand.
 
