@@ -6,17 +6,17 @@ Anything noticed that might be a problem. Status is the section a concern sits i
 
 ## Raised
 
-### HWC deviation recording does not yet match formal authorization
+### Approval status is not fully represented by decision backing
 
-**Relates to:** `socius-deviation`, `socius-decision`, HWC "Building and deploying" and "Redux"
+**Relates to:** `socius-deviation`, `backed_by_decision`, Ways of Working
 
-**Finding:** The HWC records project-specific departures in `PROJECT.md`, including hosting constraints and Redux choices. The new Deviation schema requires `authorized_by` referencing a formal Decision. That is a stronger requirement than the current stopgap practice and needs an explicit transition/approval model. Do not silently convert every HWC "exception" into a Deviation; some are qualifications inside an expectation, and others are platform-specific Standards.
+**Finding:** A Deviation may be recorded before formal backing, and `backed_by_decision` is optional. A linked Decision provides evidence of support but is not by itself a universal approval-state machine. The organization's process must determine whether and when a documented departure can be acted upon.
 
-### Guide instructions cannot be selectively inherited by ID
+### Inherited Guide step insertion remains undefined
 
 **Relates to:** `socius-guide`, universal `inherits`
 
-**Finding:** Guide instructions have `name` and `instructions` but no `id`. Under the agreed universal merge semantics, a child Guide replaces the full instruction array rather than extending/replacing individual instructions. This is consistent with the current schema but may be surprising if Guides are specialized. Needs a deliberate decision, not an automatic change.
+**Finding:** Guide instructions now have IDs for selective inheritance, but new child instructions have no explicit insertion point within an ordered inherited sequence. A deterministic ordering rule is still needed if such insertion is a supported use case.
 
 ### Inheritance conditions and independent validation need fixtures
 
@@ -39,6 +39,11 @@ Anything noticed that might be a problem. Status is the section a concern sits i
 ---
 
 ## Analysed
+
+### Earlier Guide identity and Deviation authorization mismatches
+
+**Outcome:** Resolved at the schema level. Guide instructions now require stable IDs, and Deviation Decision backing is optional. Ordered insertion and approval workflow remain separate raised concerns.
+
 
 ### CI may not be able to read the Cavatina packages
 
