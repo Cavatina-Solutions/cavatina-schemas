@@ -49,7 +49,7 @@ Neither base closes with `unevaluatedProperties`, and neither should. A base tha
 | `socius-goal`              |   ✓    | A concrete outcome under a `parent_strategy`, with `success_criteria`         |
 | `socius-decision`          |   ✓    | A specific choice, with `options_considered`, `rationale`, and `consequences` |
 | `socius-standard`          |   ✓    | Authoritative expectations for a cohesive subject, with optional inheritance          |
-| `socius-deviation`         |   ✓    | Authorized, scoped departure from a Standard and its agreed alternative       |
+| `socius-deviation`         |   ✓    | Documented, scoped departure from a Standard, optionally decision-backed       |
 | `socius-guide`             |   ✓    | Instructions for accomplishing an activity, ordered by default               |
 | `socius-way-of-working`    |   ✓    | Team collaboration, responsibilities, authority, and working agreements       |
 | `socius-reference`         |   ✓    | Reusable factual information organized into named items                       |
@@ -88,15 +88,15 @@ The schema supplies structure and relationships, while consumers implement retri
 
 ### Deviations
 
-A Deviation records an **authorized departure** from an otherwise applicable Standard. It does not create a new general Standard, and it is not inherently temporary or defective. It is scoped through `organization`, `project`, `stack`, and optional `sub_stack`, so the departure can apply to a particular engagement or context without changing the underlying Standard.
+A Deviation records a **documented departure** from an otherwise applicable Standard. It may be recorded before formal approval or a supporting Decision exists. It does not create a new general Standard, and it is not inherently temporary or defective. It is scoped through `organization`, `project`, `stack`, and optional `sub_stack`, so the departure can apply to a particular engagement or context without changing the underlying Standard.
 
-Each Deviation identifies exactly one `standard` by ID and requires an `authorized_by` Decision ID, a `reason`, and a nonempty `items` collection. Each item has a stable `id` and `description` explaining the agreed alternative; an optional `expectation` identifies the specific expectation within the referenced Standard. This is a meaningful cross-type relationship, not inheritance. Optional `notes` capture additional context.
+Each Deviation identifies exactly one `standard` by ID and requires a `reason` and a nonempty `items` collection. Optional `backed_by_decision` identifies a Decision that supports or formalizes the departure. Each item has a stable `id` and `description` explaining the proposed or agreed alternative; an optional `expectation` identifies the specific expectation within the referenced Standard. This is a meaningful cross-type relationship, not inheritance. Optional `notes` capture additional context.
 
-Determining what the organization expects in a given situation requires examining **both applicable Standards and applicable Deviations**. A Deviation does not erase the Standard; it identifies an authorized departure within its scope. Projects and Standards do not need reverse lists of Deviations: the Deviation's scope and direct `standard` reference are sufficient to discover the relationship. The specific retrieval and negotiation workflow belongs in the [future implementation notes](../SOCIUS-FUTURE-NOTES.md).
+Determining what the organization expects in a given situation requires examining **both applicable Standards and applicable Deviations**. A Deviation does not erase the Standard; it identifies a documented departure within its scope. A Decision-backed Deviation has explicit supporting authority, but a missing Decision link alone does not establish whether it is approved or permitted; the organization's Ways of Working can define when formal approval is required. Projects and Standards do not need reverse lists of Deviations: the Deviation's scope and direct `standard` reference are sufficient to discover the relationship. The specific retrieval and negotiation workflow belongs in the [future implementation notes](../SOCIUS-FUTURE-NOTES.md).
 
 ### Guides
 
-A Guide explains how to accomplish an activity rather than establishing authoritative expectations. It has an `objective` and named `instructions`; `is_ordered` defaults to `true`, meaning the sequence matters, and can be set to `false` for independently usable instructional elements. Optional `attachments` reference supporting materials.
+A Guide explains how to accomplish an activity rather than establishing authoritative expectations. It has an `objective` and identified, named `instructions` (each with `id`, `name`, and `instructions`); `is_ordered` defaults to `true`, meaning the sequence matters, and can be set to `false` for independently usable instructional elements. Optional `attachments` reference supporting materials. Guide instructions participate in the universal ID-based array merge: matching IDs replace the entire inherited instruction, and new IDs are added. For ordered Guides, the placement of new steps within an inherited sequence requires a separately defined ordering convention.
 
 Guides inherit the same organization, project, stack, and optional sub-stack retrieval dimensions as other scoped artifacts. Optional `apply_when` adds natural-language circumstances for a human or agent to evaluate after candidate retrieval. Absence of `apply_when` means no additional applicability restriction beyond scope and the Guide's subject. Guides do not have `do_not_apply_when`.
 
