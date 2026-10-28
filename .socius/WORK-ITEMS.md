@@ -20,7 +20,7 @@ The README's "Publishing" section is a placeholder. Write down how `schemas.cava
 
 **Relates to:** `feat/socius-standard-model`, `make verify`
 
-Run repository verification and representative validation fixtures for new and changed contracts. Inspect inheritance edge cases, references, and schema consistency before deciding whether the feature branch is ready to merge. No verification run has yet been confirmed for this branch.
+Run repository verification and representative validation fixtures for new and changed contracts. Inspect inheritance edge cases, references, and schema consistency before deciding whether the feature branch is ready to merge. Inheritance behavioral tests have been added to `make test`, but execution of the full suite has not yet been confirmed for this branch.
 
 ### Reconcile schema contracts with HWC migration examples
 
@@ -44,7 +44,7 @@ Guide instructions now have stable IDs, so selective replacement works through u
 
 **Relates to:** `socius-artifact.inherits`, `apply_when`, `SOCIUS-FUTURE-NOTES.md`
 
-Test default independent validation and deferred overlay validation, complete post-resolution validation, required scope inheritance, recursive identified-item merges, primitive-array concatenation, same-type checks, duplicate IDs, null behavior, and presentation of inherited applicability conditions during negotiation. Clarify how conditions are interpreted without inventing boolean semantics.
+Behavioral tests now cover independent and deferred completion, complete post-resolution validation, recursive identified-item merges, primitive arrays, same-type checks, missing parents, cycles, duplicate IDs, and Guide order. Still implement/test a strict stored-overlay structural validation pass, null policy, and presentation of inherited applicability conditions during negotiation. Clarify how conditions are interpreted without inventing boolean semantics.
 
 ### Define deviation approval workflow and migration guidance
 
@@ -232,3 +232,7 @@ Added optional `validation_deferred` on the base artifact, requiring `inherits` 
 ### Support explicit order and recursive Guide instruction overrides
 
 Added optional integer `order` to Guide instructions and revised universal identified-object inheritance to recursively merge matching IDs. Ordered Guide instructions use effective order values, not physical array positions.
+
+### Add inheritance behavioral test coverage
+
+Added `scripts/inheritance.ts` as a testable composition reference and `tests/inheritance.test.ts` using Node's built-in test runner. Wired it into `make test` after the existing schema verifier. Execution and full CI verification remain to be confirmed.
