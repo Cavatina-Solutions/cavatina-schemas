@@ -39,7 +39,7 @@ properties:
         id:
           type: string
           minLength: 1
-          description: Stable expectation identifier. Under universal inheritance, a matching ID replaces the entire inherited item.
+          description: Stable expectation identifier. Under universal inheritance, a matching ID recursively merges properties with the inherited item.
         statement:
           type: string
           minLength: 1
