@@ -29,7 +29,7 @@ properties:
   instructions:
     type: array
     minItems: 1
-    description: Identified instructional elements; follow in sequence when is_ordered is true. Universal inheritance adds new IDs and replaces matching IDs in full.
+    description: Identified instructional elements; follow in sequence when is_ordered is true. Universal inheritance adds new IDs and recursively merges matching identified instructions by property.
     items:
       type: object
       required:
@@ -41,6 +41,9 @@ properties:
           type: string
           minLength: 1
           description: Stable identifier for selective replacement under universal inheritance.
+        order:
+          type: integer
+          description: Explicit sequence position when is_ordered is true. May be inherited or changed by an identified child instruction.
         name:
           type: string
           minLength: 1
