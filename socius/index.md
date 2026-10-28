@@ -1,6 +1,6 @@
 # Socius
 
-The Socius schemas define the structure and validation contracts for **engineering knowledge artifacts** — the principles, strategy, decisions, and standards a team accumulates, captured as machine-readable artifacts rather than prose scattered across docs and tickets.
+The Socius schemas define the structure and validation contracts for **organizational practices and contextual artifacts** — the principles, strategies, decisions, standards, and other material that describe how an organization knows, chooses, and works.
 
 What lives here is the contract: the shape an artifact must take to be created, validated, and consumed consistently. The artifacts themselves live wherever their authors keep them.
 
@@ -32,6 +32,7 @@ Two abstract schemas hold the properties shared across artifact types. Both are 
 - `id` — stable unique identifier
 - `title` — human-readable title
 - `summary` — a concise overview of the artifact, **not** its full content
+- `inherits` — optional ID of a parent artifact of the **same type**, using the [shared inheritance semantics](#artifact-inheritance)
 
 `socius-scoped-artifact` extends `socius-artifact` and adds the [scope fields](#scope). A type that carries scope extends this rather than the base directly, and so gets both sets of properties.
 
@@ -68,9 +69,9 @@ Each defines the structure unique to its kind of knowledge — a principle has a
 
 Roughly upstream to downstream: principles and operating context feed strategy; strategy drives goals and decisions; decisions produce standards; standards express the resulting expectations.
 
-The last four are **vocabulary**. `socius-term` and `socius-alias` record what a word means and what a shorthand expands to; `socius-organization` and `socius-person` name the entities those words refer to. They're knowledge like everything else here — the difference is structural. Every other type derives from something: strategy from principles, goals from strategy, standards from decisions. Vocabulary derives from nothing and feeds nothing. It's what the rest is written in terms of.
+The terminology artifacts are **vocabulary**. `socius-term` and `socius-alias` record what a word means and what a shorthand expands to; `socius-organization` and `socius-person` name the entities those words refer to. They're knowledge like everything else here — the difference is structural. Other artifact types can express domain-specific influences or parentage, but those relationships do not automatically imply inheritance. Vocabulary derives from nothing and feeds nothing. It's what the rest is written in terms of.
 
-### Standards: authoring, retrieval, and inheritance
+### Standards: authoring and retrieval
 
 A Standard defines the organization's authoritative expectations for **one cohesive subject**. It may contain multiple related expectations, but it should not be an atomic lint rule or a catch-all document for everything about a technology. Split unrelated subjects into separate Standards.
 
@@ -78,14 +79,7 @@ Canonical Toolchain configurations own conventions they already express and enfo
 
 **Retrieval starts with the scoped artifact dimensions.** A consumer uses `organization`, `project`, `stack`, and optional `sub_stack` to identify candidates, including broader shared/general records as relevant. A missing `sub_stack` denotes no narrower specialization. For Standards, the required `category` array adds taxonomy labels for retrieving relevant subjects; it is not a second stack or a substitute for scope. For example, general React expectations can use `stack: frontend`, `category: [react]` without a sub-stack, while a HubSpot specialization can use `stack: frontend`, `sub_stack: hubspot`, `category: [react]`. Retrieving general React expectations should not automatically bring in every specialized HubSpot record.
 
-**Explicit inheritance is separate from retrieval.** A Standard may reference one parent by `extends_standard`. After retrieving a selected Standard, the consumer fetches its ancestors even if they are outside the initial category result. It resolves the chain from oldest ancestor to selected descendant. Each expectation has an `id` and a `statement`:
-
-1. Begin with the ancestor's expectations.
-2. Add each child expectation whose ID is new.
-3. Replace the entire inherited expectation when the child's ID matches.
-4. Repeat through the chain; the deepest descendant wins for any repeated ID.
-
-This produces one resolved collection of expectations **before** an agent interprets or follows them. The consumer validates referenced parents, detects cycles and duplicate expectation IDs within a Standard, and must not silently resolve ambiguous or missing references. `related_standards` are informative links, not inheritance. `extends_standard` is specialization, not historical supersession; both parent and child remain current.
+**Specialization uses the universal `inherits` relationship.** Standards carry identified `expectations`, so a descendant can add or replace individual expectations using the [shared merge rules](#artifact-inheritance). `related_standards` remains associative only; it does not imply inheritance.
 
 The schema supplies structure and relationships, while consumers implement retrieval against their known work context. Category membership alone never implies inheritance or automatic precedence. Standards may include optional `apply_when` conditions describing additional circumstances of applicability, such as work performed by an AI agent. These are natural-language conditions interpreted by the human or agent, not by the deterministic retrieval script. Standards do not have `do_not_apply_when` or `exceptions`; qualifications intrinsic to an expectation belong in its statement, and separately authorized departures can be represented as Deviations.
 
@@ -99,13 +93,32 @@ Guides inherit the same organization, project, stack, and optional sub-stack ret
 
 A Reference captures reusable factual information about a subject, such as the behavior, capabilities, or constraints of a technology, platform, or system. It does not itself establish a Standard, record a Decision, or prescribe a procedure. Reference content is organized into a nonempty `items` collection; each item has a `name` and a prose `description`. Keep each Reference focused on a coherent subject rather than accumulating unrelated facts.
 
-References inherit the organization, project, stack, and optional sub-stack dimensions of scoped artifacts. A required, nonempty `category` array provides additional taxonomy for retrieving references about a subject. Consumers can also follow optional `related_artifacts` associations to retrieve other relevant material. References have no inheritance or override behavior: a related Reference remains independently meaningful.
+References inherit the organization, project, stack, and optional sub-stack dimensions of scoped artifacts. A required, nonempty `category` array provides additional taxonomy for retrieving references about a subject. Consumers can also follow optional `related_artifacts` associations to retrieve other relevant material. A related Reference remains independently meaningful; an association does not imply inheritance. References can use the optional universal `inherits` property if an author intentionally needs same-type specialization, but it is not required for ordinary reference relationships.
 
 When information depends on a vendor version or other external circumstances, state those qualifications in the relevant item rather than presenting them as universally true. A Reference does not use Standard-style applicability rules to determine whether its facts govern work.
 
+## Artifact inheritance
+
+Inheritance is a **domain-wide, explicit** composition mechanism, not a Standard-specific feature. Any Socius artifact may declare `inherits` with the ID of one parent artifact of the **same artifact type** (the same `schema` discriminator). Different types, missing parents, and cycles are errors; a consumer must not guess a replacement. A parent relationship such as `parent_strategy`, a generic association, and historical `supersedes` are not inheritance.
+
+Both parent and child are independently valid against their artifact-type schema, including all required properties. Inheritance does not waive required fields. Resolve the chain from the oldest ancestor to the selected child using these rules:
+
+| Value kind | Merge behavior |
+| --- | --- |
+| Property absent in child, or child value `null` | Keep inherited value |
+| Non-null scalar | Child replaces parent |
+| Object | Recursively merge properties |
+| Array of primitive values | Concatenate parent then child, preserving order |
+| Array of objects identified by `id` | Add new IDs; a matching ID replaces the inherited object **in full** |
+| Array of objects without `id` | Child array replaces parent array |
+
+The child's `id`, `schema`, and `inherits` are structural metadata, not inherited payload values. A resolved artifact retains the child's identity and contract. Consumers should detect duplicate IDs within identified-item arrays rather than silently resolving ambiguity. Arrays of primitive values are concatenated, not implicitly treated as a logical AND or OR; in particular, natural-language `apply_when` conditions remain subject to human/agent interpretation.
+
+Inheritance composition is distinct from discovering candidates and assessing applicability. A human or agent should be able to identify relevant artifacts using structured scope, taxonomy, relationships, and any natural-language conditions. See the repository-root [Socius future notes](../SOCIUS-FUTURE-NOTES.md) for the proposed associative-resolver negotiation and delivery workflow; that tool design is not part of the schema contract.
+
 ## Scope
 
-Most artifacts describe knowledge that applies somewhere in particular. `socius-scoped-artifact` defines the three fields that say where:
+Most artifacts describe practices or context that apply somewhere in particular. `socius-scoped-artifact` defines the scope fields:
 
 - `organization` — the `id` of a `socius-organization` artifact, or `shared`
 - `project` — the ID of the project the artifact pertains to, or `shared`
@@ -114,7 +127,7 @@ Most artifacts describe knowledge that applies somewhere in particular. `socius-
 
 The first three are required on every scoped type; `sub_stack` is optional. **The three base scope fields are always stated, never inferred from absence** — an artifact that applies everywhere says so with `shared` / `shared` / `general` rather than by leaving the fields out.
 
-Only `organization` names a modeled artifact. `project` and `stack` are free strings whose values are a matter of consumer convention; nothing here enumerates the valid ones.
+Only `organization` names a currently modeled artifact. `project`, `stack`, and `sub_stack` are free strings whose values are a matter of consumer convention; nothing here enumerates the valid ones.
 
 Scope is inherited and never redeclared: a type gets these fields by `allOf`-ref'ing `socius-scoped-artifact`, and no type defines them itself. Because concrete types close with `unevaluatedProperties: false`, the types that don't inherit scope can't carry it at all — an `organization` on a core principle is _rejected_, not ignored. Whether a kind of artifact can be scoped is therefore part of the contract, not a convention to be remembered.
 
@@ -174,4 +187,4 @@ Owned by Cavatina Solutions and its Socius Team. Changes go through PR review on
 
 - Artifact type names are prefixed `socius-`, matching the `schema` discriminator.
 - A new artifact type is a new folder here, a row in the table above, and a decision about which base it extends.
-- Schema design should reflect the ontology of the engineering knowledge being represented — not the behavior of any particular Socius agent, workflow, or consumer.
+- Schema design should reflect the ontology of the organizational practices and context being represented — not the behavior of any particular Socius agent, workflow, or consumer.
