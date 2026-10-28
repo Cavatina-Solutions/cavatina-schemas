@@ -14,61 +14,53 @@ Everything known to need doing here. Status is the section an item sits in. Work
 
 The README's "Publishing" section is a placeholder. Write down how `schemas.cavatinasolutions.com` is served from this repo (the `CNAME` suggests GitHub Pages), what triggers a publish, and how long a change takes to reach consumers.
 
-### Clarify the Principles–Standards boundary
+### Verify and review the Socius schema feature branch
 
-**Depends on:** nothing
+**Depends on:** Active artifact modeling
 
-**Relates to:** `socius-principle-core`, `socius-principle-derived`, `socius-standard`
+**Relates to:** `feat/socius-standard-model`, `make verify`
 
-Document the distinction between enduring organizational beliefs and applicable, enforceable expectations. Make the distinction clear enough that authors can classify real examples, without changing the schemas unless the examples expose a concrete contract gap. Coordinate any corresponding Practices index updates in `cavatina-practices`.
+Run repository verification and representative validation fixtures for new and changed contracts. Inspect inheritance edge cases, references, and schema consistency before deciding whether the feature branch is ready to merge. No verification run has yet been confirmed for this branch.
 
-### Introduce a Reference artifact
+### Reconcile schema contracts with HWC migration examples
 
-**Depends on:** nothing
+**Depends on:** Current artifact definitions
 
-**Relates to:** Socius artifact taxonomy
+**Relates to:** `socius-artifacts/docs/HOW-WE-CODE.md`, `docs/COLLABORATION.md`, `docs/agents/COLLABORATION.md`
 
-Model reusable factual reference information about technologies, platforms, systems, and their behaviors or constraints (for example, a HubSpot-specific behavior). Distinguish reference facts from standards, procedures, and operating context; define the schema and update `socius/index.md`. The exact payload and retrieval organization still need design.
+Test representative real material against Standards, Guides, Ways of Working, References, Toolchains, Decisions, and Deviations. Establish the boundary between authoritative tool configurations and prose. Coordinate actual Practices content migration in its own repository.
 
-### Rename the existing procedural Ways of Working concept to How-To
+### Reconcile Guide instruction identity with universal inheritance
 
-**Depends on:** nothing
+**Depends on:** Shared inheritance semantics
 
-**Relates to:** Existing procedural design in Practices; `socius-way-of-working` if present
+**Relates to:** `socius-guide`, `socius-artifact.inherits`
 
-The previously designed artifact (`objective`, `apply_when`, optional `do_not_apply_when`, ordered named `process` steps, optional `attachments`) describes instructions for accomplishing a task, not the broader team meaning of Ways of Working. Establish `socius-how-to` and its migration/compatibility treatment, then update the Socius schema index. Coordinate renaming and content migration in Practices. Avoid conflating this with `socius-guidance`, which explains a Standard.
+Guide instructions currently have `name` but no `id`, so inheriting a Guide replaces its entire instruction array. Determine whether this is intended or whether instructions should gain stable IDs for selective replacement; keep ordered execution semantics intact.
 
-### Model Ways of Working as team collaboration and operating agreements
+### Review inheritance validation and applicability semantics
 
-**Depends on:** Clarify the How-To separation
+**Depends on:** Shared inheritance semantics
 
-**Relates to:** Team roles, responsibilities, authority, approvals, collaboration expectations, and working agreements
+**Relates to:** `socius-artifact.inherits`, `apply_when`, `SOCIUS-FUTURE-NOTES.md`
 
-Design the actual Ways of Working artifact around how an organization and its human/AI team coordinate and govern work (for example, PO authority and approval boundaries). Distinguish standing agreements from ordered how-to procedures. Define its schema and index entry; coordinate the Practices index/README changes. Do not assume collaboration needs a separate artifact type.
+Test independent child validity, required scope overrides, primitive-array concatenation, same-type checks, duplicate IDs, null behavior, and the presentation of inherited applicability conditions during negotiation. Clarify how conditions are interpreted without inventing boolean semantics.
 
-### Model Conditional Standards
+### Reconcile project deviations and authorizing decisions
 
-**Depends on:** Clarify the Principles–Standards boundary
+**Depends on:** Deviation schema
 
-**Relates to:** `socius-standard`, applicability, guidance
+**Relates to:** `socius-deviation`, `socius-decision`, HWC project-specific deviation guidance
 
-Represent an organization's authoritative standard that applies under narrower circumstances, such as a different expected approach when working with HubSpot. Determine whether existing `apply_when` / `do_not_apply_when` suffice or whether an explicit relationship to a general Standard is necessary. Conditional Standards remain Standards, not Deviations.
+The HWC permits deviations recorded in `PROJECT.md`; the new schema requires an authorizing Decision. Determine the intended migration/approval process and how a Deviation's alternative is presented alongside the affected Standard.
 
-### Introduce a Deviation artifact
+### Update Practices indexes and migration guidance
 
-**Depends on:** Model Conditional Standards
+**Depends on:** New schema model
 
-**Relates to:** `socius-standard`, scoped artifacts, decisions
+**Relates to:** `cavatina-practices`, Guides, Ways of Working, Standards, Reference, Project, Deviations
 
-Model an acknowledged, authorized departure from the Standard that would otherwise govern a particular project or engagement, including its reason, applicability, agreed alternative, and any relevant approval. A deviation is not inherently temporary or defective, and it does not establish a new organization-wide Standard. Determine the schema and references without reducing the alternative to a short exceptions string.
-
-### Introduce a Project artifact
-
-**Depends on:** nothing
-
-**Relates to:** `socius-scoped-artifact.project`, `socius-organization`
-
-Model project identity and durable foundational context separately from the `project` scope string: purpose, mission, relationships, repositories, and links to external systems such as Jira boards/projects or Confluence spaces as appropriate. Do not turn Project into a ticket tracker or container for every project-related artifact. Determine fields, references, and scoping rules; detailed requirements and plans are separate, parked topics.
+Coordinate schema links, folder layout, and terminology updates in the Practices repository; this repository only owns the contracts and their documentation.
 
 ### Settle the Socius v1 contracts
 
@@ -79,6 +71,7 @@ Model project identity and durable foundational context separately from the `pro
 `socius/index.md` declares the domain pre-stable: which properties belong on which artifact type, and which are required, is still open. Settle the active contracts, then decide when to remove the pre-stable note so versioning guarantees apply as written. This is a broader stabilization milestone, not a prerequisite for recording new work items.
 
 ---
+
 
 ## In progress
 
@@ -136,6 +129,7 @@ Clarify which facts and coordination state are maintained centrally in Practices
 
 ---
 
+
 ## Done
 
 ### Put the repo on the Socius toolchain
@@ -153,3 +147,72 @@ Vendored `socius-artifacts/` and declared `git-hooks` and `make-ts-tools`. Moved
 **Relates to:** Requirements — "`make verify` passes"; concern "CI may not be able to read the Cavatina packages"
 
 `.github/workflows/verify.yml` installs with `secrets.NPM_GITHUB_TOKEN`, a personal access token with `read:packages`, which is now available to this repository's Actions. The workflow's own token cannot read packages published from other repositories, so the secret is what lets `make install` fetch the `@cavatina-solutions` packages.
+
+### Clarify the Principles–Standards boundary
+
+**Depends on:** nothing
+
+**Relates to:** `socius-principle-core`, `socius-principle-derived`, `socius-standard`
+
+Document the distinction between enduring organizational beliefs and applicable, enforceable expectations. Make the distinction clear enough that authors can classify real examples, without changing the schemas unless the examples expose a concrete contract gap. Coordinate any corresponding Practices index updates in `cavatina-practices`.
+
+### Introduce a Reference artifact
+
+**Depends on:** nothing
+
+**Relates to:** Socius artifact taxonomy
+
+Model reusable factual reference information about technologies, platforms, systems, and their behaviors or constraints (for example, a HubSpot-specific behavior). Distinguish reference facts from standards, procedures, and operating context; define the schema and update `socius/index.md`. The exact payload and retrieval organization still need design.
+
+### Replace procedural Ways of Working with Guide
+
+**Depends on:** nothing
+
+**Relates to:** Existing procedural design in Practices; `socius-way-of-working` if present
+
+The previously designed artifact (`objective`, `apply_when`, optional `do_not_apply_when`, ordered named `process` steps, optional `attachments`) describes instructions for accomplishing a task, not the broader team meaning of Ways of Working. Established `socius-guide` and its migration/compatibility treatment, then update the Socius schema index. Coordinate renaming and content migration in Practices. Guidance was retired from the active schema model.
+
+### Model Ways of Working as team collaboration and operating agreements
+
+**Depends on:** Clarify the How-To separation
+
+**Relates to:** Team roles, responsibilities, authority, approvals, collaboration expectations, and working agreements
+
+Design the actual Ways of Working artifact around how an organization and its human/AI team coordinate and govern work (for example, PO authority and approval boundaries). Distinguish standing agreements from ordered how-to procedures. Define its schema and index entry; coordinate the Practices index/README changes. Do not assume collaboration needs a separate artifact type.
+
+### Model Conditional Standards
+
+**Depends on:** Clarify the Principles–Standards boundary
+
+**Relates to:** `socius-standard`, applicability, guidance
+
+Represent an organization's authoritative standard that applies under narrower circumstances, such as a different expected approach when working with HubSpot. Determine whether existing `apply_when` / `do_not_apply_when` suffice or whether an explicit relationship to a general Standard is necessary. Conditional Standards remain Standards, not Deviations.
+
+### Introduce a Deviation artifact
+
+**Depends on:** Model Conditional Standards
+
+**Relates to:** `socius-standard`, scoped artifacts, decisions
+
+Model an acknowledged, authorized departure from the Standard that would otherwise govern a particular project or engagement, including its reason, applicability, agreed alternative, and any relevant approval. A deviation is not inherently temporary or defective, and it does not establish a new organization-wide Standard. Determine the schema and references without reducing the alternative to a short exceptions string.
+
+### Introduce a Project artifact
+
+**Depends on:** nothing
+
+**Relates to:** `socius-scoped-artifact.project`, `socius-organization`
+
+Model project identity and durable foundational context separately from the `project` scope string: purpose, mission, relationships, repositories, and links to external systems such as Jira boards/projects or Confluence spaces as appropriate. Do not turn Project into a ticket tracker or container for every project-related artifact. Determine fields, references, and scoping rules; detailed requirements and plans are separate, parked topics.
+
+### Establish shared inheritance and resolver design notes
+
+Added universal `inherits` on the base artifact, documented shared composition semantics, and captured proposed associative resolver negotiation in `SOCIUS-FUTURE-NOTES.md`.
+
+### Remove Guidance and clarify artifact boundaries
+
+Retired `socius-guidance`, updated the Socius index, and documented Standards versus Guides, Ways of Working, and References.
+
+### Introduce Project scope support and shared sub-stack
+
+Added optional `sub_stack` to scoped artifacts and introduced the unscoped Project artifact with organizational relationships and external resource links.
+
