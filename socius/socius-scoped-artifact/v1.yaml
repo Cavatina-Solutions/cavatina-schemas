@@ -20,3 +20,6 @@ properties:
   stack:
     type: string
     description: Either 'general' or the stack that the artifact pertains to.
+  sub_stack:
+    type: string
+    description: Optional narrower technology or platform within the declared stack; absent when no specialization is needed.
