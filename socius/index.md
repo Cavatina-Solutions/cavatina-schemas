@@ -49,6 +49,7 @@ Neither base closes with `unevaluatedProperties`, and neither should. A base tha
 | `socius-decision`          |   ✓    | A specific choice, with `options_considered`, `rationale`, and `consequences` |
 | `socius-standard`          |   ✓    | Authoritative expectations for a cohesive subject, with optional inheritance          |
 | `socius-guide`             |   ✓    | Instructions for accomplishing an activity, ordered by default               |
+| `socius-reference`         |   ✓    | Reusable factual information organized into named items                       |
 | `socius-toolchain`         |   ✓    | Required tools, version policy, and permitted exceptions                      |
 | `socius-term`              |   ✓    | A defined `term` and its `definition`                                         |
 | `socius-alias`             |   ✓    | An alternate name that `resolves_to` another artifact                         |
@@ -94,6 +95,14 @@ A Guide explains how to accomplish an activity rather than establishing authorit
 
 Guides inherit the same organization, project, stack, and optional sub-stack retrieval dimensions as other scoped artifacts. Optional `apply_when` adds natural-language circumstances for a human or agent to evaluate after candidate retrieval. Absence of `apply_when` means no additional applicability restriction beyond scope and the Guide's subject. Guides do not have `do_not_apply_when`.
 
+### References
+
+A Reference captures reusable factual information about a subject, such as the behavior, capabilities, or constraints of a technology, platform, or system. It does not itself establish a Standard, record a Decision, or prescribe a procedure. Reference content is organized into a nonempty `items` collection; each item has a `name` and a prose `description`. Keep each Reference focused on a coherent subject rather than accumulating unrelated facts.
+
+References inherit the organization, project, stack, and optional sub-stack dimensions of scoped artifacts. A required, nonempty `category` array provides additional taxonomy for retrieving references about a subject. Consumers can also follow optional `related_artifacts` associations to retrieve other relevant material. References have no inheritance or override behavior: a related Reference remains independently meaningful.
+
+When information depends on a vendor version or other external circumstances, state those qualifications in the relevant item rather than presenting them as universally true. A Reference does not use Standard-style applicability rules to determine whether its facts govern work.
+
 ## Scope
 
 Most artifacts describe knowledge that applies somewhere in particular. `socius-scoped-artifact` defines the three fields that say where:
@@ -116,7 +125,7 @@ The unscoped types are unscoped deliberately:
 
 ### Category is not scope
 
-`socius-standard`, `socius-principle-derived`, and `socius-term` carry category-based taxonomy. For Standards, `category` is a nonempty array of labels; the other artifact types retain their own schema-defined shapes. Category groups artifacts for retrieval and says nothing by itself about where an artifact applies. A derived principle's `category` may well hold something stack-shaped in practice (`backend`, say), but no schema treats it as scope, and consumers shouldn't either.
+`socius-standard`, `socius-reference`, `socius-principle-derived`, and `socius-term` carry category-based taxonomy. For Standards and References, `category` is a nonempty array of labels; the other artifact types retain their own schema-defined shapes. Category groups artifacts for retrieval and says nothing by itself about where an artifact applies. A derived principle's `category` may well hold something stack-shaped in practice (`backend`, say), but no schema treats it as scope, and consumers shouldn't either.
 
 ## Composition
 
@@ -141,7 +150,11 @@ That identifier names both the artifact type and the version of its contract, so
 
 ## Linking is by ID, not `$ref`
 
-Fields like `guided_by_principles`, `derived_from`, `parent_strategy`, `informed_by_operating_context`, `resulting_standards`, and `supersedes` / `superseded_by` hold the plain `id` of another artifact as a string. So do the vocabulary links — `socius-alias`'s `resolves_to.id`, `socius-person`'s `affiliations[].organization`, `socius-organization`'s `relationships[].organization` — and the `organization` scope field itself.
+Relationships should communicate their domain meaning when that meaning exists. For example, `guided_by_principles`, `derived_from`, `parent_strategy`, `informed_by_operating_context`, `resulting_standards`, and `supersedes` / `superseded_by` describe specific influences, parentage, outcomes, or historical replacement; they are not interchangeable with a generic association. Use individually named fields for such meaningful relationships, rather than flattening them into a generic list.
+
+When the relationship truly conveys only association, a typed `related_artifacts` collection is appropriate. A Reference uses entries with `type` (the target Socius artifact type) and `id` (the target artifact's stable ID). This does not imply that the target governs, informs, derives from, or is overridden by the Reference. Do not invent a stronger relationship merely to avoid a generic association, and do not replace meaningful relationships with generic ones simply because they could be represented that way.
+
+Fields like those above generally hold the plain `id` of another artifact as a string. So do the vocabulary links — `socius-alias`'s `resolves_to.id`, `socius-person`'s `affiliations[].organization`, `socius-organization`'s `relationships[].organization` — and the `organization` scope field itself.
 
 JSON Schema can't check that those IDs resolve, so **referential integrity is a consumer-side concern**. Nothing here catches a dangling reference, and back-links — `derived_principles` on a core principle versus `derived_from` on the derived one — have to be kept in sync by hand.
 
