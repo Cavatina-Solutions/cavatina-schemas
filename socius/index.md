@@ -8,7 +8,7 @@ What lives here is the contract: the shape an artifact must take to be created, 
 
 **Pre-stable — still being designed.** Until this section says otherwise, `v1` of every artifact type is a draft. It may change incompatibly in place rather than moving to `v2`, so don't rely on these `$id`s as settled contracts yet.
 
-What's still open: which properties belong on which artifact type, and which of them are required. The base contract (`schema`, `id`, `title`, `summary`) and the relationships between types are settled.
+What's still open: which properties belong on which artifact type, and which of them are required. The shared identity fields (`schema`, `id`, `title`, `summary`) are established, while the inheritance and relationship contracts remain under review until stabilization.
 
 Once this note is removed, the [versioning rules](../README.md#versioning) apply as written and breaking changes go to a new major.
 
@@ -72,13 +72,13 @@ Each defines the structure unique to its kind of knowledge — a principle has a
 
 Roughly upstream to downstream: principles and operating context feed strategy; strategy drives goals and decisions; decisions produce standards; standards express the resulting expectations.
 
-The terminology artifacts are **vocabulary**. `socius-term` and `socius-alias` record what a word means and what a shorthand expands to; `socius-organization` and `socius-person` name the entities those words refer to. They're knowledge like everything else here — the difference is structural. Other artifact types can express domain-specific influences or parentage, but those relationships do not automatically imply inheritance. Vocabulary derives from nothing and feeds nothing. It's what the rest is written in terms of.
+The four Terminology artifact types are **vocabulary**. `socius-term` and `socius-alias` record what a word means and what a shorthand expands to; `socius-organization` and `socius-person` name the entities those words refer to. They're knowledge like everything else here — the difference is structural. Other artifact types can express domain-specific influences or parentage, but those relationships do not automatically imply inheritance. Vocabulary derives from nothing and feeds nothing. It's what the rest is written in terms of.
 
 ### Standards: authoring and retrieval
 
 A Standard defines the organization's authoritative expectations for **one cohesive subject**. It may contain multiple related expectations, but it should not be an atomic lint rule or a catch-all document for everything about a technology. Split unrelated subjects into separate Standards.
 
-Canonical Toolchain configurations own conventions they already express and enforce, such as formatting and lint rules. Standards do not duplicate those configurations in prose. How-To material describes a task procedure rather than defining the Standard's expectations.
+Canonical Toolchain configurations own conventions they already express and enforce, such as formatting and lint rules. Standards do not duplicate those configurations in prose. Guides describe task procedures rather than defining a Standard's expectations.
 
 **Retrieval starts with the scoped artifact dimensions.** A consumer uses `organization`, `project`, `stack`, and optional `sub_stack` to identify candidates, including broader shared/general records as relevant. A missing `sub_stack` denotes no narrower specialization. For Standards, the required `category` array adds taxonomy labels for retrieving relevant subjects; it is not a second stack or a substitute for scope. For example, general React expectations can use `stack: frontend`, `category: [react]` without a sub-stack, while a HubSpot specialization can use `stack: frontend`, `sub_stack: hubspot`, `category: [react]`. Retrieving general React expectations should not automatically bring in every specialized HubSpot record.
 
@@ -114,7 +114,7 @@ A Reference captures reusable factual information about a subject, such as the b
 
 References inherit the organization, project, stack, and optional sub-stack dimensions of scoped artifacts. A required, nonempty `category` array provides additional taxonomy for retrieving references about a subject. Consumers can also follow optional `related_artifacts` associations to retrieve other relevant material. A related Reference remains independently meaningful; an association does not imply inheritance. References can use the optional universal `inherits` property if an author intentionally needs same-type specialization, but it is not required for ordinary reference relationships.
 
-When information depends on a vendor version or other external circumstances, state those qualifications in the relevant item rather than presenting them as universally true. A Reference does not use Standard-style applicability rules to determine whether its facts govern work.
+When information depends on a vendor version or other external circumstances, state those qualifications in the relevant item rather than presenting them as universally true. A Reference does not use Standard-style applicability rules to determine whether its facts govern work. When factual information affects a Standard or Guide, the relevant governing artifact must still be identified separately.
 
 ## Artifact inheritance
 
@@ -131,9 +131,9 @@ Both parent and child are independently valid against their artifact-type schema
 | Array of objects identified by `id` | Add new IDs; a matching ID replaces the inherited object **in full** |
 | Array of objects without `id` | Child array replaces parent array |
 
-The child's `id`, `schema`, and `inherits` are structural metadata, not inherited payload values. A resolved artifact retains the child's identity and contract. Consumers should detect duplicate IDs within identified-item arrays rather than silently resolving ambiguity. Arrays of primitive values are concatenated, not implicitly treated as a logical AND or OR; in particular, natural-language `apply_when` conditions remain subject to human/agent interpretation.
+The child's `id`, `schema`, and `inherits` are structural metadata, not inherited payload values. Independently required fields must still be present in each child; inheritance does not make a partial child document valid. A resolved artifact retains the child's identity and contract. Consumers should detect duplicate IDs within identified-item arrays rather than silently resolving ambiguity. Arrays of primitive values are concatenated, not implicitly treated as a logical AND or OR; in particular, natural-language `apply_when` conditions remain subject to human/agent interpretation.
 
-Inheritance composition is distinct from discovering candidates and assessing applicability. A human or agent should be able to identify relevant artifacts using structured scope, taxonomy, relationships, and any natural-language conditions. See the repository-root [Socius future notes](../SOCIUS-FUTURE-NOTES.md) for the proposed associative-resolver negotiation and delivery workflow; that tool design is not part of the schema contract.
+Inheritance composition is distinct from discovering candidates and assessing applicability. A human or agent should be able to identify relevant artifacts using structured scope, taxonomy, relationships, and any natural-language conditions. When determining applicable expectations, relevant Deviations must be considered alongside Standards. See the repository-root [Socius future notes](../SOCIUS-FUTURE-NOTES.md) for the proposed associative-resolver negotiation and delivery workflow; that tool design is not part of the schema contract.
 
 ### Projects
 
