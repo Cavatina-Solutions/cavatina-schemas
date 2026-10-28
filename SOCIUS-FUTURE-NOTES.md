@@ -55,6 +55,23 @@ The resolver should distinguish:
 - Historical supersession, which is not inheritance.
 - Natural-language applicability negotiation, which is not a deterministic filter.
 
+### Standards and Deviations must be considered together
+
+A request such as "What should we do for this project in this situation?" cannot be answered by Standards alone. The domain requires looking for applicable **Deviations** as well. A Standard establishes the normal authoritative expectations; a Deviation records a separately authorized, scoped departure. Neither is a substitute for the other.
+
+The proposed resolver should:
+
+1. Retrieve candidate Standards by scope and category, and candidate Deviations by their own scope and `standard` references. Deviations do not need backlinks on Project or Standard artifacts.
+2. Include Deviations relevant to selected Standards, including Standards found through inheritance. A deviation may target a particular expectation ID or the broader Standard.
+3. Validate that each Deviation's `standard` resolves to a Standard and its required `authorized_by` resolves to a Decision. Validate an optional item-level `expectation` against the referenced Standard's effective expectations, accounting for inheritance.
+4. Present enough lightweight information to assess whether a candidate Deviation is relevant to the requested work context, alongside the Standard applicability negotiation where appropriate. Scope alone is not proof that every departure applies to every action within a project.
+5. Resolve the applicable Standard content, then return the agreed alternatives from applicable Deviations **alongside** the underlying expectations. Make the departures explicit; do not silently rewrite the Standard or pretend a Deviation is a specialized Standard.
+6. Preserve provenance: which Standard and expectation would otherwise govern, which Deviation changes the answer, and which Decision authorized it.
+
+A Deviation is not necessarily short-lived. Its continued applicability depends on its documented scope and the relevant authorization, not an assumption that it will be fixed later. If several Deviations or Standards appear to conflict, do not invent a precedence rule; surface the conflict for human/agent assessment and an appropriate decision.
+
+This is a proposed resolver workflow, not a new schema relationship or a requirement to implement the resolver in this repository.
+
 ### Open implementation questions to test
 
 - **Condition presentation across inheritance:** The first candidate list should include enough parent/child applicability context to make the selection sound. Decide whether to pre-traverse ancestors for condition summaries, or to negotiate again when newly discovered parent conditions appear.
