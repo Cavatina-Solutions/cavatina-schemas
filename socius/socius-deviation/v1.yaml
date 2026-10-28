@@ -1,0 +1,57 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: https://schemas.cavatinasolutions.com/socius/socius-deviation/v1.yaml
+$comment: '1.0'
+title: Socius Deviation
+description: An authorized, scoped departure from an otherwise applicable Standard, with its agreed alternative.
+allOf:
+  - $ref: https://schemas.cavatinasolutions.com/socius/socius-scoped-artifact/v1.yaml
+type: object
+required:
+  - standard
+  - authorized_by
+  - reason
+  - items
+properties:
+  schema:
+    const: socius-deviation/v1
+  standard:
+    type: string
+    minLength: 1
+    description: ID of the Socius Standard from which this Deviation departs.
+  authorized_by:
+    type: string
+    minLength: 1
+    description: ID of the Socius Decision authorizing this departure.
+  reason:
+    type: string
+    minLength: 1
+    description: Why this departure from the Standard was authorized.
+  items:
+    type: array
+    minItems: 1
+    description: Identifiable departures and their agreed alternatives. An optional expectation identifies the affected Standard expectation.
+    items:
+      type: object
+      required:
+        - id
+        - description
+      properties:
+        id:
+          type: string
+          minLength: 1
+          description: Stable identifier for this deviation item, including inheritance resolution.
+        description:
+          type: string
+          minLength: 1
+          description: What is done differently and the agreed alternative to the Standard.
+        expectation:
+          type: string
+          minLength: 1
+          description: Optional ID of the Standard expectation being departed from.
+      additionalProperties: false
+  notes:
+    type: array
+    items:
+      type: string
+    description: Additional context relevant to the authorized departure.
+unevaluatedProperties: false
