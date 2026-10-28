@@ -22,7 +22,7 @@ Anything noticed that might be a problem. Status is the section a concern sits i
 
 **Relates to:** `socius-artifact`, `socius-standard`, `socius-way-of-working`, future resolver notes
 
-**Finding:** Primitive arrays concatenate, including `apply_when`, but concatenation itself does not define AND/OR semantics. Required fields are repeated in independently valid children and replace parent values. The docs also describe null as retaining a parent value while current typed schemas generally reject null. Verify the behavior with concrete fixtures before treating the resolver semantics as settled.
+**Finding:** Primitive arrays concatenate, including `apply_when`, but concatenation itself does not define AND/OR semantics. Deferred children can now omit required fields that inheritance supplies, but direct JSON Schema validation of incomplete stored children still fails. Inheritance-aware stored-overlay validation and full post-merge validation need fixtures. The docs also describe null as retaining a parent value while current typed schemas generally reject null.
 
 ### HWC toolchain enforcement remains partly outside the current Toolchain contract
 
