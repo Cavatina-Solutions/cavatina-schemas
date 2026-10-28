@@ -30,13 +30,13 @@ Run repository verification and representative validation fixtures for new and c
 
 Test representative real material against Standards, Guides, Ways of Working, References, Toolchains, Decisions, and Deviations. Establish the boundary between authoritative tool configurations and prose. Coordinate actual Practices content migration in its own repository.
 
-### Reconcile Guide instruction identity with universal inheritance
+### Determine insertion ordering for inherited Guide instructions
 
-**Depends on:** Shared inheritance semantics
+**Depends on:** Guide instruction IDs and shared inheritance semantics
 
 **Relates to:** `socius-guide`, `socius-artifact.inherits`
 
-Guide instructions currently have `name` but no `id`, so inheriting a Guide replaces its entire instruction array. Determine whether this is intended or whether instructions should gain stable IDs for selective replacement; keep ordered execution semantics intact.
+Guide instructions now have stable IDs, so selective replacement works through universal inheritance. Determine how new child steps can be inserted between existing parent steps when `is_ordered: true`, without inventing implicit ordering from prose.
 
 ### Review inheritance validation and applicability semantics
 
@@ -46,13 +46,13 @@ Guide instructions currently have `name` but no `id`, so inheriting a Guide repl
 
 Test independent child validity, required scope overrides, primitive-array concatenation, same-type checks, duplicate IDs, null behavior, and the presentation of inherited applicability conditions during negotiation. Clarify how conditions are interpreted without inventing boolean semantics.
 
-### Reconcile project deviations and authorizing decisions
+### Define deviation approval workflow and migration guidance
 
 **Depends on:** Deviation schema
 
 **Relates to:** `socius-deviation`, `socius-decision`, HWC project-specific deviation guidance
 
-The HWC permits deviations recorded in `PROJECT.md`; the new schema requires an authorizing Decision. Determine the intended migration/approval process and how a Deviation's alternative is presented alongside the affected Standard.
+Deviations can now be recorded before a Decision exists, with optional `backed_by_decision`. Define which departures require formal approval and how to distinguish proposed, accepted, and prohibited departures through Ways of Working or other process; do not assume a missing Decision link determines approval state.
 
 ### Update Practices indexes and migration guidance
 
@@ -216,3 +216,11 @@ Retired `socius-guidance`, updated the Socius index, and documented Standards ve
 
 Added optional `sub_stack` to scoped artifacts and introduced the unscoped Project artifact with organizational relationships and external resource links.
 
+
+### Add stable IDs to Guide instructions
+
+Guide instructions now require `id`, alongside `name` and `instructions`, enabling universal identified-array inheritance.
+
+### Permit decision-backed Deviations without requiring prior approval
+
+Renamed required `authorized_by` to optional `backed_by_decision`, allowing documentation before formal backing while preserving a typed Decision relationship.
