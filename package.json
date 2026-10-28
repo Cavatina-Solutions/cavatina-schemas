@@ -18,7 +18,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint . --max-warnings=0",
     "lint:fix": "eslint . --fix --max-warnings=0",
-    "test": "tsx scripts/verify.ts"
+    "test": "tsx scripts/verify.ts && node --import tsx --test tests/*.test.ts"
   },
   "devDependencies": {
     "@cavatina-solutions/core": "^0.0.9",
