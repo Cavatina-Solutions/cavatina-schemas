@@ -1,0 +1,73 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: https://schemas.cavatinasolutions.com/socius/socius-way-of-working/v1.yaml
+$comment: '1.0'
+title: Socius Way of Working
+description: Agreements governing how teammates organize, coordinate, collaborate, and make decisions together.
+allOf:
+  - $ref: https://schemas.cavatinasolutions.com/socius/socius-scoped-artifact/v1.yaml
+type: object
+required:
+  - category
+  - items
+properties:
+  schema:
+    const: socius-way-of-working/v1
+  category:
+    type: array
+    minItems: 1
+    uniqueItems: true
+    items:
+      type: string
+      minLength: 1
+    description: Taxonomy labels for retrieving working agreements; not applicability scope.
+  apply_when:
+    type: array
+    minItems: 1
+    items:
+      type: string
+    description: Optional natural-language circumstances that further constrain when this Way of Working applies, interpreted by a human or agent.
+  items:
+    type: array
+    minItems: 1
+    description: Unordered, identifiable working agreements. Universal inheritance adds new IDs and replaces matching IDs in full.
+    items:
+      type: object
+      required:
+        - id
+        - name
+        - description
+      properties:
+        id:
+          type: string
+          minLength: 1
+          description: Stable item identifier for universal inheritance.
+        name:
+          type: string
+          minLength: 1
+          description: Human-readable heading for the agreement.
+        description:
+          type: string
+          minLength: 1
+          description: The substantive working agreement, including relevant qualifications.
+      additionalProperties: false
+  guided_by_principles:
+    type: array
+    items:
+      type: string
+    description: IDs of Principles that guide this Way of Working.
+  informed_by_strategy:
+    type: array
+    items:
+      type: string
+    description: IDs of Strategies informing how this work is organized.
+  stems_from_decisions:
+    type: array
+    items:
+      type: string
+    description: IDs of Decisions from which this Way of Working originates, directly or as a consequence.
+  related_ways_of_working:
+    type: array
+    items:
+      type: string
+    description: IDs of associated Ways of Working; association does not imply inheritance.
+unevaluatedProperties: false
