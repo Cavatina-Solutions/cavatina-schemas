@@ -39,15 +39,12 @@ properties:
         id:
           type: string
           minLength: 1
-          description: Stable expectation identifier used to add or fully replace the same expectation in an ancestor Standard.
+          description: Stable expectation identifier. Under universal inheritance, a matching ID replaces the entire inherited item.
         statement:
           type: string
           minLength: 1
           description: Substantive expectation, including relevant qualifications where needed.
       additionalProperties: false
-  extends_standard:
-    type: string
-    description: ID of one broader Standard whose expectations are inherited; matching expectation IDs replace inherited definitions entirely.
   related_standards:
     type: array
     items:
