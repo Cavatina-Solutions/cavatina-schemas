@@ -1,0 +1,90 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: https://schemas.cavatinasolutions.com/socius/socius-project/v1.yaml
+$comment: '1.0'
+title: Socius Project
+description: Foundational identity and context for a project, separate from work-item tracking.
+allOf:
+  - $ref: https://schemas.cavatinasolutions.com/socius/socius-artifact/v1.yaml
+type: object
+required:
+  - purpose
+properties:
+  schema:
+    const: socius-project/v1
+  purpose:
+    type: string
+    minLength: 1
+    description: Why the project exists and what it is intended to accomplish.
+  context:
+    type: string
+    description: Foundational background, premise, and circumstances needed to understand the project.
+  constraints:
+    type: array
+    items:
+      type: string
+    description: Significant boundaries or constraints affecting the project.
+  organizations:
+    type: array
+    description: Organizations involved with the project and the roles they play.
+    items:
+      type: object
+      required:
+        - organization
+        - role
+      properties:
+        organization:
+          type: string
+          minLength: 1
+          description: ID of a Socius Organization artifact.
+        role:
+          type: string
+          minLength: 1
+          description: The organization's role in this project, such as client or delivery partner.
+      additionalProperties: false
+  repositories:
+    type: array
+    description: Repositories associated with the project.
+    items:
+      type: object
+      required:
+        - name
+        - url
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: Human-readable repository name.
+        url:
+          type: string
+          format: uri
+          description: Repository URL.
+      additionalProperties: false
+  resources:
+    type: array
+    description: External resources associated with the project, such as Jira boards or Confluence spaces.
+    items:
+      type: object
+      required:
+        - name
+        - type
+        - url
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: Human-readable resource name.
+        type:
+          type: string
+          minLength: 1
+          description: Kind of resource, such as jira-board or confluence-space.
+        url:
+          type: string
+          format: uri
+          description: Resource URL.
+      additionalProperties: false
+  related_projects:
+    type: array
+    items:
+      type: string
+    description: IDs of other related Socius Project artifacts; association alone implies no dependency or authority.
+unevaluatedProperties: false
