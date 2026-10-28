@@ -47,7 +47,7 @@ Neither base closes with `unevaluatedProperties`, and neither should. A base tha
 | `socius-strategy`          |   ✓    | Intentional engineering direction, guided by principles and operating context |
 | `socius-goal`              |   ✓    | A concrete outcome under a `parent_strategy`, with `success_criteria`         |
 | `socius-decision`          |   ✓    | A specific choice, with `options_considered`, `rationale`, and `consequences` |
-| `socius-standard`          |   ✓    | A single enforceable `rule`, with `apply_when` / `do_not_apply_when`          |
+| `socius-standard`          |   ✓    | Authoritative expectations for a cohesive subject, with optional inheritance          |
 | `socius-guidance`          |        | Explanatory support for exactly one standard (`supports_standard`)            |
 | `socius-toolchain`         |   ✓    | Required tools, version policy, and permitted exceptions                      |
 | `socius-term`              |   ✓    | A defined `term` and its `definition`                                         |
@@ -63,11 +63,30 @@ Standards establish authoritative expectations that contributors are required to
 
 Principles may inform Standards, but a Standard does not require a corresponding Principle. The distinction is between **what the organization believes** and **what it requires contributors to do**.
 
-Each defines the structure unique to its kind of knowledge — a principle has a `statement`, an operating context entry carries `measurements`, a decision records a `decision` and its `rationale`, a standard defines a `rule`.
+Each defines the structure unique to its kind of knowledge — a principle has a `statement`, an operating context entry carries `measurements`, a decision records a `decision` and its `rationale`, a standard defines identifiable `expectations`.
 
 Roughly upstream to downstream: principles and operating context feed strategy; strategy drives goals and decisions; decisions produce standards; standards get guidance.
 
 The last four are **vocabulary**. `socius-term` and `socius-alias` record what a word means and what a shorthand expands to; `socius-organization` and `socius-person` name the entities those words refer to. They're knowledge like everything else here — the difference is structural. Every other type derives from something: strategy from principles, goals from strategy, standards from decisions. Vocabulary derives from nothing and feeds nothing. It's what the rest is written in terms of.
+
+### Standards: authoring, retrieval, and inheritance
+
+A Standard defines the organization's authoritative expectations for **one cohesive subject**. It may contain multiple related expectations, but it should not be an atomic lint rule or a catch-all document for everything about a technology. Split unrelated subjects into separate Standards.
+
+Canonical Toolchain configurations own conventions they already express and enforce, such as formatting and lint rules. Standards do not duplicate those configurations in prose. Guidance can explain a Standard, while How-To material describes a task procedure; neither changes what the Standard requires.
+
+**Retrieval starts with the scoped artifact dimensions.** A consumer uses `organization`, `project`, `stack`, and optional `sub_stack` to identify candidates, including broader shared/general records as relevant. A missing `sub_stack` denotes no narrower specialization. For Standards, the required `category` array adds taxonomy labels for retrieving relevant subjects; it is not a second stack or a substitute for scope. For example, general React expectations can use `stack: frontend`, `category: [react]` without a sub-stack, while a HubSpot specialization can use `stack: frontend`, `sub_stack: hubspot`, `category: [react]`. Retrieving general React expectations should not automatically bring in every specialized HubSpot record.
+
+**Explicit inheritance is separate from retrieval.** A Standard may reference one parent by `extends_standard`. After retrieving a selected Standard, the consumer fetches its ancestors even if they are outside the initial category result. It resolves the chain from oldest ancestor to selected descendant. Each expectation has an `id` and a `statement`:
+
+1. Begin with the ancestor's expectations.
+2. Add each child expectation whose ID is new.
+3. Replace the entire inherited expectation when the child's ID matches.
+4. Repeat through the chain; the deepest descendant wins for any repeated ID.
+
+This produces one resolved collection of expectations **before** an agent interprets or follows them. The consumer validates referenced parents, detects cycles and duplicate expectation IDs within a Standard, and must not silently resolve ambiguous or missing references. `related_standards` are informative links, not inheritance. `extends_standard` is specialization, not historical supersession; both parent and child remain current.
+
+The schema supplies structure and relationships, while consumers implement retrieval against their known work context. Category membership alone never implies inheritance or automatic precedence. The authoring model does not require Standard-level `apply_when`, `do_not_apply_when`, or `exceptions`; qualifications intrinsic to an expectation belong in its statement, and separately authorized departures can be represented as Deviations.
 
 ## Scope
 
@@ -76,8 +95,9 @@ Most artifacts describe knowledge that applies somewhere in particular. `socius-
 - `organization` — the `id` of a `socius-organization` artifact, or `shared`
 - `project` — the ID of the project the artifact pertains to, or `shared`
 - `stack` — the stack the artifact pertains to, or `general`
+- `sub_stack` — optional narrower technology or platform within the stack (for example, `hubspot` under `frontend`)
 
-All three are required on every scoped type. **Scope is always stated, never inferred from absence** — an artifact that applies everywhere says so with `shared` / `shared` / `general` rather than by leaving the fields out.
+The first three are required on every scoped type; `sub_stack` is optional. **The three base scope fields are always stated, never inferred from absence** — an artifact that applies everywhere says so with `shared` / `shared` / `general` rather than by leaving the fields out.
 
 Only `organization` names a modeled artifact. `project` and `stack` are free strings whose values are a matter of consumer convention; nothing here enumerates the valid ones.
 
@@ -91,7 +111,7 @@ The unscoped types are unscoped deliberately:
 
 ### Category is not scope
 
-`socius-standard`, `socius-principle-derived`, and `socius-term` each carry a `category`. It's taxonomy — a way to group artifacts of the same kind — and says nothing about where the artifact applies. A derived principle's `category` may well hold something stack-shaped in practice (`backend`, say), but no schema treats it as scope, and consumers shouldn't either.
+`socius-standard`, `socius-principle-derived`, and `socius-term` carry category-based taxonomy. For Standards, `category` is a nonempty array of labels; the other artifact types retain their own schema-defined shapes. Category groups artifacts for retrieval and says nothing by itself about where an artifact applies. A derived principle's `category` may well hold something stack-shaped in practice (`backend`, say), but no schema treats it as scope, and consumers shouldn't either.
 
 ## Composition
 
