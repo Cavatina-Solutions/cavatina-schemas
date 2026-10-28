@@ -33,6 +33,7 @@ Two abstract schemas hold the properties shared across artifact types. Both are 
 - `title` — human-readable title
 - `summary` — a concise overview of the artifact, **not** its full content
 - `inherits` — optional ID of a parent artifact of the **same type**, using the [shared inheritance semantics](#artifact-inheritance)
+- `validation_deferred` — optional boolean (default `false`) that allows full validation after inheritance rather than requiring the stored child to be complete; `true` requires `inherits`
 
 `socius-scoped-artifact` extends `socius-artifact` and adds the [scope fields](#scope). A type that carries scope extends this rather than the base directly, and so gets both sets of properties.
 
@@ -96,7 +97,7 @@ Determining what the organization expects in a given situation requires examinin
 
 ### Guides
 
-A Guide explains how to accomplish an activity rather than establishing authoritative expectations. It has an `objective` and identified, named `instructions` (each with `id`, `name`, and `instructions`); `is_ordered` defaults to `true`, meaning the sequence matters, and can be set to `false` for independently usable instructional elements. Optional `attachments` reference supporting materials. Guide instructions participate in the universal ID-based array merge: matching IDs replace the entire inherited instruction, and new IDs are added. For ordered Guides, the placement of new steps within an inherited sequence requires a separately defined ordering convention.
+A Guide explains how to accomplish an activity rather than establishing authoritative expectations. It has an `objective` and identified, named `instructions` (each with `id`, `name`, and `instructions`); `is_ordered` defaults to `true`, meaning the sequence matters, and can be set to `false` for independently usable instructional elements. Optional `attachments` reference supporting materials. Guide instructions participate in the universal ID-based array merge: matching IDs identify the same instruction and their properties merge recursively; new IDs add instructions. Each instruction may carry an integer `order`. When `is_ordered` is true, the resolved instructions are sequenced by `order`, not their physical array positions. A child can change an inherited instruction's order or prose independently. New instructions must resolve to complete entries; duplicate or missing effective order values require validation/handling rather than guessing.
 
 Guides inherit the same organization, project, stack, and optional sub-stack retrieval dimensions as other scoped artifacts. Optional `apply_when` adds natural-language circumstances for a human or agent to evaluate after candidate retrieval. Absence of `apply_when` means no additional applicability restriction beyond scope and the Guide's subject. Guides do not have `do_not_apply_when`.
 
@@ -104,7 +105,7 @@ Guides inherit the same organization, project, stack, and optional sub-stack ret
 
 A Way of Working establishes how teammates organize, coordinate, collaborate, and govern their work: responsibilities, decision authority, approvals, communication, reviews, and working agreements. Unlike a Guide, its `items` are not ordered instructions. Unlike a Standard, it is not primarily an expectation about how a work product is structured or implemented.
 
-Each Way of Working has a nonempty `category` array and nonempty `items` array. Each item has a stable `id`, human-readable `name`, and substantive `description`. Optional `apply_when` captures circumstances such as collaboration with AI agents. The inherited `inherits` property allows an agent-specific working agreement to specialize a general agreement using the [same universal merge rules](#artifact-inheritance); matching item IDs replace inherited items in full.
+Each Way of Working has a nonempty `category` array and nonempty `items` array. Each item has a stable `id`, human-readable `name`, and substantive `description`. Optional `apply_when` captures circumstances such as collaboration with AI agents. The inherited `inherits` property allows an agent-specific working agreement to specialize a general agreement using the [same universal merge rules](#artifact-inheritance); matching item IDs identify the same item and merge their properties recursively.
 
 Optional `guided_by_principles`, `informed_by_strategy`, and `stems_from_decisions` express meaningful domain relationships. `related_ways_of_working` is associative only and does not imply inheritance.
 
@@ -120,7 +121,7 @@ When information depends on a vendor version or other external circumstances, st
 
 Inheritance is a **domain-wide, explicit** composition mechanism, not a Standard-specific feature. Any Socius artifact may declare `inherits` with the ID of one parent artifact of the **same artifact type** (the same `schema` discriminator). Different types, missing parents, and cycles are errors; a consumer must not guess a replacement. A parent relationship such as `parent_strategy`, a generic association, and historical `supersedes` are not inheritance.
 
-Both parent and child are independently valid against their artifact-type schema, including all required properties. Inheritance does not waive required fields. Resolve the chain from the oldest ancestor to the selected child using these rules:
+By default, each stored artifact must be valid against its artifact-type schema independently. A child with `inherits` may instead declare `validation_deferred: true`: its stored representation may omit fields that inheritance supplies, but the **resolved artifact must satisfy the complete artifact-type schema**. This does not change the artifact's type or weaken what constitutes a complete artifact. The child must still declare its own `schema`, `id`, and `inherits` so it can be identified and resolved. Resolve the chain from the oldest ancestor to the selected child using these rules:
 
 | Value kind | Merge behavior |
 | --- | --- |
@@ -128,10 +129,19 @@ Both parent and child are independently valid against their artifact-type schema
 | Non-null scalar | Child replaces parent |
 | Object | Recursively merge properties |
 | Array of primitive values | Concatenate parent then child, preserving order |
-| Array of objects identified by `id` | Add new IDs; a matching ID replaces the inherited object **in full** |
+| Array of objects identified by `id` | Add new IDs; matching IDs identify the same object, whose properties merge recursively |
 | Array of objects without `id` | Child array replaces parent array |
 
-The child's `id`, `schema`, and `inherits` are structural metadata, not inherited payload values. Independently required fields must still be present in each child; inheritance does not make a partial child document valid. A resolved artifact retains the child's identity and contract. Consumers should detect duplicate IDs within identified-item arrays rather than silently resolving ambiguity. Arrays of primitive values are concatenated, not implicitly treated as a logical AND or OR; in particular, natural-language `apply_when` conditions remain subject to human/agent interpretation.
+The child's `id`, `schema`, and `inherits` are structural metadata, not inherited payload values. When validation is not deferred, all required fields must be present in the stored child. When it is deferred, missing required content must be supplied through resolution. A resolved artifact retains the child's identity and contract. Consumers should detect duplicate IDs within identified-item arrays rather than silently resolving ambiguity. Arrays of primitive values are concatenated, not implicitly treated as a logical AND or OR; in particular, natural-language `apply_when` conditions remain subject to human/agent interpretation.
+
+### Validation timing
+
+There are two legitimate validation questions: whether a stored file is independently complete, and whether the effective artifact after inheritance is complete. `validation_deferred` distinguishes them explicitly:
+
+- Absent or `false`: validate the stored artifact against its full declared schema, even when it inherits another artifact.
+- `true`: requires `inherits`. Validate enough of the stored representation to identify its type and parent and ensure provided values are structurally sensible, resolve its same-type inheritance chain, then validate the **complete resolved artifact** against the declared schema. A failure at either stage is an error.
+
+A normal JSON Schema validator does not fetch or merge parent artifacts. It will reject an incomplete deferred child when run directly against the full concrete schema. The `validation_deferred` flag is a **contract for inheritance-aware validation**, not a switch that makes ordinary JSON Schema automatically ignore `required` constraints. A consumer must provide the deferred stored-form check and full post-resolution validation. This distinction should be understandable to a teammate reading the file: a deferred child is intentionally an overlay, not a standalone complete document.
 
 Inheritance composition is distinct from discovering candidates and assessing applicability. A human or agent should be able to identify relevant artifacts using structured scope, taxonomy, relationships, and any natural-language conditions. When determining applicable expectations, relevant Deviations must be considered alongside Standards. See the repository-root [Socius future notes](../SOCIUS-FUTURE-NOTES.md) for the proposed associative-resolver negotiation and delivery workflow; that tool design is not part of the schema contract.
 
