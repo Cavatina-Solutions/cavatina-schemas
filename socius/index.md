@@ -48,6 +48,7 @@ Neither base closes with `unevaluatedProperties`, and neither should. A base tha
 | `socius-goal`              |   ✓    | A concrete outcome under a `parent_strategy`, with `success_criteria`         |
 | `socius-decision`          |   ✓    | A specific choice, with `options_considered`, `rationale`, and `consequences` |
 | `socius-standard`          |   ✓    | Authoritative expectations for a cohesive subject, with optional inheritance          |
+| `socius-guide`             |   ✓    | Instructions for accomplishing an activity, ordered by default               |
 | `socius-toolchain`         |   ✓    | Required tools, version policy, and permitted exceptions                      |
 | `socius-term`              |   ✓    | A defined `term` and its `definition`                                         |
 | `socius-alias`             |   ✓    | An alternate name that `resolves_to` another artifact                         |
@@ -85,7 +86,13 @@ Canonical Toolchain configurations own conventions they already express and enfo
 
 This produces one resolved collection of expectations **before** an agent interprets or follows them. The consumer validates referenced parents, detects cycles and duplicate expectation IDs within a Standard, and must not silently resolve ambiguous or missing references. `related_standards` are informative links, not inheritance. `extends_standard` is specialization, not historical supersession; both parent and child remain current.
 
-The schema supplies structure and relationships, while consumers implement retrieval against their known work context. Category membership alone never implies inheritance or automatic precedence. The authoring model does not require Standard-level `apply_when`, `do_not_apply_when`, or `exceptions`; qualifications intrinsic to an expectation belong in its statement, and separately authorized departures can be represented as Deviations.
+The schema supplies structure and relationships, while consumers implement retrieval against their known work context. Category membership alone never implies inheritance or automatic precedence. Standards may include optional `apply_when` conditions describing additional circumstances of applicability, such as work performed by an AI agent. These are natural-language conditions interpreted by the human or agent, not by the deterministic retrieval script. Standards do not have `do_not_apply_when` or `exceptions`; qualifications intrinsic to an expectation belong in its statement, and separately authorized departures can be represented as Deviations.
+
+### Guides
+
+A Guide explains how to accomplish an activity rather than establishing authoritative expectations. It has an `objective` and named `instructions`; `is_ordered` defaults to `true`, meaning the sequence matters, and can be set to `false` for independently usable instructional elements. Optional `attachments` reference supporting materials.
+
+Guides inherit the same organization, project, stack, and optional sub-stack retrieval dimensions as other scoped artifacts. Optional `apply_when` adds natural-language circumstances for a human or agent to evaluate after candidate retrieval. Absence of `apply_when` means no additional applicability restriction beyond scope and the Guide's subject. Guides do not have `do_not_apply_when`.
 
 ## Scope
 
