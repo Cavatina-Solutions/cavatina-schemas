@@ -1,0 +1,53 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: https://schemas.cavatinasolutions.com/socius/socius-guide/v1.yaml
+$comment: '1.0'
+title: Socius Guide
+description: Instructions for accomplishing an activity, in a required sequence or as independently usable instructional elements.
+allOf:
+  - $ref: https://schemas.cavatinasolutions.com/socius/socius-scoped-artifact/v1.yaml
+type: object
+required:
+  - objective
+  - instructions
+properties:
+  schema:
+    const: socius-guide/v1
+  objective:
+    type: string
+    minLength: 1
+    description: What following this Guide is intended to accomplish.
+  apply_when:
+    type: array
+    minItems: 1
+    items:
+      type: string
+    description: Optional natural-language circumstances in which the Guide applies.
+  is_ordered:
+    type: boolean
+    default: true
+    description: Whether the instructions must be followed in array order; defaults to true when omitted.
+  instructions:
+    type: array
+    minItems: 1
+    description: Named instructional elements; follow in sequence when is_ordered is true.
+    items:
+      type: object
+      required:
+        - name
+        - instructions
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: Human-readable label for referencing this instructional element.
+        instructions:
+          type: string
+          minLength: 1
+          description: What to do, including any necessary conditional detail expressed as prose.
+      additionalProperties: false
+  attachments:
+    type: array
+    items:
+      type: string
+    description: References to supporting templates, diagrams, checklists, or other instructional resources.
+unevaluatedProperties: false
