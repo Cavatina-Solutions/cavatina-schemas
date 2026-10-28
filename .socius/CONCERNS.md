@@ -6,6 +6,24 @@ Anything noticed that might be a problem. Status is the section a concern sits i
 
 ## Raised
 
+### Deferred validation is not yet a complete validation pipeline
+
+**Relates to:** `socius-artifact.validation_deferred`, `scripts/inheritance.ts`, `scripts/verify.ts`
+
+**Finding:** The base schema declares the flag, but direct concrete JSON Schema validation still rejects incomplete stored children. The reference resolver skips stored-form full validation for deferred children, yet does not validate all supplied overlay fields before merging. A malformed supplied value could be hidden by later composition. A dedicated stored-overlay structural validation pass is needed; tests alone do not implement it.
+
+### Reference item identity is inconsistent with universal identified-array inheritance
+
+**Relates to:** `socius-reference.items`, `socius-artifact.inherits`
+
+**Finding:** Reference items have `name` and `description` but no `id`. Consequently, their array is replaced wholesale under inheritance rather than allowing selective updates. Decide whether this is intentional or whether Reference items should receive stable IDs, as Guide, Standard, and Ways of Working items do.
+
+### The test suite has not been executed and does not yet cover every artifact schema
+
+**Relates to:** `tests/inheritance.test.ts`, `scripts/verify.ts`, `make verify`
+
+**Finding:** Existing verification compiles schemas, while the new inheritance tests exercise representative Standards and Guides. They do not yet exercise every concrete artifact type, full deferred-overlay validation, or all invalid reference cases. Run `make verify` and add fixture coverage as the contract stabilizes.
+
 ### Approval status is not fully represented by decision backing
 
 **Relates to:** `socius-deviation`, `backed_by_decision`, Ways of Working
@@ -16,7 +34,7 @@ Anything noticed that might be a problem. Status is the section a concern sits i
 
 **Relates to:** `socius-guide`, universal `inherits`
 
-**Finding:** Guide instructions now have IDs for selective inheritance, but new child instructions have no explicit insertion point within an ordered inherited sequence. A deterministic ordering rule is still needed if such insertion is a supported use case.
+**Finding:** Guide instructions have IDs and integer `order`, and the reference resolver sorts effective steps. The schema still permits missing or duplicate order values; the reference helper rejects them. Decide whether to enforce these invariants in schema or in inheritance-aware validation, especially for deferred children.
 
 ### Inheritance conditions and independent validation need fixtures
 
