@@ -63,12 +63,12 @@ The proposed resolver should:
 
 1. Retrieve candidate Standards by scope and category, and candidate Deviations by their own scope and `standard` references. Deviations do not need backlinks on Project or Standard artifacts.
 2. Include Deviations relevant to selected Standards, including Standards found through inheritance. A deviation may target a particular expectation ID or the broader Standard.
-3. Validate that each Deviation's `standard` resolves to a Standard and its required `authorized_by` resolves to a Decision. Validate an optional item-level `expectation` against the referenced Standard's effective expectations, accounting for inheritance.
+3. Validate that each Deviation's `standard` resolves to a Standard and, when supplied, its optional `backed_by_decision` resolves to a Decision. Validate an optional item-level `expectation` against the referenced Standard's effective expectations, accounting for inheritance.
 4. Present enough lightweight information to assess whether a candidate Deviation is relevant to the requested work context, alongside the Standard applicability negotiation where appropriate. Scope alone is not proof that every departure applies to every action within a project.
 5. Resolve the applicable Standard content, then return the agreed alternatives from applicable Deviations **alongside** the underlying expectations. Make the departures explicit; do not silently rewrite the Standard or pretend a Deviation is a specialized Standard.
-6. Preserve provenance: which Standard and expectation would otherwise govern, which Deviation changes the answer, and which Decision authorized it.
+6. Preserve provenance: which Standard and expectation would otherwise govern, which Deviation changes the answer, and which Decision, if any, backs it; distinguish documented departures from those with formal decision backing.
 
-A Deviation is not necessarily short-lived. Its continued applicability depends on its documented scope and the relevant authorization, not an assumption that it will be fixed later. If several Deviations or Standards appear to conflict, do not invent a precedence rule; surface the conflict for human/agent assessment and an appropriate decision.
+A Deviation can be recorded before formal approval, and a missing `backed_by_decision` is not itself proof of rejection or authorization. A linked Decision should be checked for what it actually supports; the field alone is not an approval workflow. Ways of Working can establish which departures require formal approval and when they may be acted upon. A Deviation is not necessarily short-lived. Its continued applicability depends on its documented scope and the relevant authorization, not an assumption that it will be fixed later. If several Deviations or Standards appear to conflict, do not invent a precedence rule; surface the conflict for human/agent assessment and an appropriate decision.
 
 This is a proposed resolver workflow, not a new schema relationship or a requirement to implement the resolver in this repository.
 
@@ -78,6 +78,7 @@ This is a proposed resolver workflow, not a new schema relationship or a require
 - **Null versus schema validation:** The conceptual merge treats child null as absence. Existing closed schemas generally reject null for typed fields; decide whether null is only a resolver-internal representation or whether schemas should explicitly permit it. Do not quietly relax the independent-validity rule.
 - **Required field composition:** Because every child must independently validate, required scalar fields (including scope) will normally replace the parent's value even when identical. This is intentional; inheritance is primarily valuable for optional fields and additive identified collections.
 - **Primitive-array duplicates:** Concatenation is the agreed rule. Whether a consumer deduplicates repeated values for display, while preserving provenance and original stored values, remains a separate projection choice. Do not silently alter the canonical merge semantics.
+- **Guide ordering:** Guide instructions now have IDs and support selective replacement, but an ordered Guide needs a deterministic insertion convention for new child steps between inherited steps. Do not silently infer positions from names or prose.
 - **Mixed object-array shapes:** Determine a reliable policy for arrays whose entries are inconsistently identified; reject ambiguous merges rather than guessing.
 - **Scope and inheritance:** A child can specialize scope (such as `sub_stack: hubspot`) while inheriting general content. The child's scope governs retrieval of that child; parent scope is not an extra hidden runtime condition unless the domain model explicitly says so.
 - **Conflict and ambiguity:** Multiple independently applicable sibling artifacts may disagree without an inheritance relationship. Do not infer a winner solely from category overlap or ordering. Expose the conflict for an appropriate decision.
@@ -99,12 +100,12 @@ The current [How We Code](https://github.com/Cavatina-Solutions/socius-artifacts
 | General collaboration, authority, approvals, escalation and handoffs | **Ways of Working** | These are standing agreements, not ordered procedures |
 | Vendor behavior, framework constraints, unexpected platform limitations, tool quirks | **References** when they are facts; Standards or Decisions when they prescribe organizational choices | Distinguish external reality from the organization's chosen response |
 | Historical choices and their rationale | **Decisions** | Do not convert every inline rationale into a Decision unless it represents a meaningful choice |
-| Client- or project-specific departures documented in `PROJECT.md` | **Deviations** where an authorized departure exists | New Deviation contracts require an authorizing Decision; migration may need an approval step rather than inventing an ID |
+| Client- or project-specific departures documented in `PROJECT.md` | **Deviations** where an authorized departure exists | A Deviation may be recorded without a Decision; optional `backed_by_decision` can capture later formal support |
 | Project purpose, constraints, repositories, external resources | **Project** | Keep tickets, sprint state, plans, and detailed domain/architecture models in their appropriate systems/artifacts |
 
 This mapping is not a completed migration or proof that every HWC paragraph fits. During migration, classify **individual cohesive subjects**, not whole sections blindly. The same section can mix enforceable expectations, factual constraints, procedures, and rationale.
 
-**Specific issues to test before stabilization:** the HWC's current project-level deviation recording versus formal `authorized_by`; selective inheritance of Guide instructions without IDs; Toolchain policy versus executable tool wiring; and whether References need more explicit external version/evidence context. These are tracked in [Concerns](.socius/CONCERNS.md) and [Work items](.socius/WORK-ITEMS.md).
+**Specific issues to test before stabilization:** the HWC's project-level deviation recording versus optional `backed_by_decision`; ordering of newly added inherited Guide instructions; Toolchain policy versus executable tool wiring; and whether References need more explicit external version/evidence context. These are tracked in [Concerns](.socius/CONCERNS.md) and [Work items](.socius/WORK-ITEMS.md).
 
 ### Scope of these notes
 
