@@ -29,7 +29,7 @@ properties:
   items:
     type: array
     minItems: 1
-    description: Unordered, identifiable working agreements. Universal inheritance adds new IDs and replaces matching IDs in full.
+    description: Unordered, identifiable working agreements. Universal inheritance adds new IDs and recursively merges matching IDs by property.
     items:
       type: object
       required:
