@@ -20,6 +20,10 @@ properties:
   title:
     type: string
     description: Human-readable title.
+  inherits:
+    type: string
+    minLength: 1
+    description: Optional ID of a parent artifact of exactly the same Socius type. Consumers verify the reference and resolve inheritance using the domain-wide merge rules.
   summary:
     type: string
     description: A few sentence overview of the artifact. Not the actual full content.
