@@ -124,6 +124,12 @@ This mapping is not a completed migration or proof that every HWC paragraph fits
 
 **Specific issues to test before stabilization:** the HWC's project-level deviation recording versus optional `backed_by_decision`; ordering of newly added inherited Guide instructions; Toolchain policy versus executable tool wiring; and whether References need more explicit external version/evidence context. These are tracked in [Concerns](.socius/CONCERNS.md) and [Work items](.socius/WORK-ITEMS.md).
 
+### Executable inheritance examples
+
+The schema repository now includes a small [inheritance composition reference](scripts/inheritance.ts) and [behavioral tests](tests/inheritance.test.ts), invoked through `make test` after the existing schema verifier. These cover same-type parent traversal, cycles and missing references, scalar/object/array merging, identified-item updates, primitive-array concatenation, deferred post-merge completeness, and ordered Guide instructions.
+
+This reference is **not** the associative resolver or a production-ready inheritance-aware validator. In particular, a deferred stored child currently receives structural identity checks and full validation after resolution, but does not yet receive the complete per-property stored-overlay validation pass described above. That pass must be implemented before treating the validator as production-ready. The test suite and full `make verify` still need to be executed in a properly provisioned Node/Yarn environment.
+
 ### Scope of these notes
 
 This repository owns schema contracts and their domain semantics. It does **not** implement the associative resolver, the agent conversation, or the Practices ingestion/indexing pipeline. Those will live in Socius or its transitional tooling. These notes are the handoff for that future effort and should be revisited as real usage provides evidence.
