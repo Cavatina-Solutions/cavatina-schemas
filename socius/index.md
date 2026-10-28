@@ -49,6 +49,7 @@ Neither base closes with `unevaluatedProperties`, and neither should. A base tha
 | `socius-goal`              |   ✓    | A concrete outcome under a `parent_strategy`, with `success_criteria`         |
 | `socius-decision`          |   ✓    | A specific choice, with `options_considered`, `rationale`, and `consequences` |
 | `socius-standard`          |   ✓    | Authoritative expectations for a cohesive subject, with optional inheritance          |
+| `socius-deviation`         |   ✓    | Authorized, scoped departure from a Standard and its agreed alternative       |
 | `socius-guide`             |   ✓    | Instructions for accomplishing an activity, ordered by default               |
 | `socius-way-of-working`    |   ✓    | Team collaboration, responsibilities, authority, and working agreements       |
 | `socius-reference`         |   ✓    | Reusable factual information organized into named items                       |
@@ -83,7 +84,15 @@ Canonical Toolchain configurations own conventions they already express and enfo
 
 **Specialization uses the universal `inherits` relationship.** Standards carry identified `expectations`, so a descendant can add or replace individual expectations using the [shared merge rules](#artifact-inheritance). `related_standards` remains associative only; it does not imply inheritance.
 
-The schema supplies structure and relationships, while consumers implement retrieval against their known work context. Category membership alone never implies inheritance or automatic precedence. Standards may include optional `apply_when` conditions describing additional circumstances of applicability, such as work performed by an AI agent. These are natural-language conditions interpreted by the human or agent, not by the deterministic retrieval script. Standards do not have `do_not_apply_when` or `exceptions`; qualifications intrinsic to an expectation belong in its statement, and separately authorized departures can be represented as Deviations.
+The schema supplies structure and relationships, while consumers implement retrieval against their known work context. Category membership alone never implies inheritance or automatic precedence. Standards may include optional `apply_when` conditions describing additional circumstances of applicability, such as work performed by an AI agent. These are natural-language conditions interpreted by the human or agent, not by the deterministic retrieval script. Standards do not have `do_not_apply_when` or `exceptions`; qualifications intrinsic to an expectation belong in its statement, and separately authorized departures are represented as Deviations.
+
+### Deviations
+
+A Deviation records an **authorized departure** from an otherwise applicable Standard. It does not create a new general Standard, and it is not inherently temporary or defective. It is scoped through `organization`, `project`, `stack`, and optional `sub_stack`, so the departure can apply to a particular engagement or context without changing the underlying Standard.
+
+Each Deviation identifies exactly one `standard` by ID and requires an `authorized_by` Decision ID, a `reason`, and a nonempty `items` collection. Each item has a stable `id` and `description` explaining the agreed alternative; an optional `expectation` identifies the specific expectation within the referenced Standard. This is a meaningful cross-type relationship, not inheritance. Optional `notes` capture additional context.
+
+Determining what the organization expects in a given situation requires examining **both applicable Standards and applicable Deviations**. A Deviation does not erase the Standard; it identifies an authorized departure within its scope. Projects and Standards do not need reverse lists of Deviations: the Deviation's scope and direct `standard` reference are sufficient to discover the relationship. The specific retrieval and negotiation workflow belongs in the [future implementation notes](../SOCIUS-FUTURE-NOTES.md).
 
 ### Guides
 
