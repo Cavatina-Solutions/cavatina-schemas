@@ -50,6 +50,7 @@ Neither base closes with `unevaluatedProperties`, and neither should. A base tha
 | `socius-decision`          |   ✓    | A specific choice, with `options_considered`, `rationale`, and `consequences` |
 | `socius-standard`          |   ✓    | Authoritative expectations for a cohesive subject, with optional inheritance          |
 | `socius-guide`             |   ✓    | Instructions for accomplishing an activity, ordered by default               |
+| `socius-way-of-working`    |   ✓    | Team collaboration, responsibilities, authority, and working agreements       |
 | `socius-reference`         |   ✓    | Reusable factual information organized into named items                       |
 | `socius-toolchain`         |   ✓    | Required tools, version policy, and permitted exceptions                      |
 | `socius-term`              |   ✓    | A defined `term` and its `definition`                                         |
@@ -88,6 +89,14 @@ The schema supplies structure and relationships, while consumers implement retri
 A Guide explains how to accomplish an activity rather than establishing authoritative expectations. It has an `objective` and named `instructions`; `is_ordered` defaults to `true`, meaning the sequence matters, and can be set to `false` for independently usable instructional elements. Optional `attachments` reference supporting materials.
 
 Guides inherit the same organization, project, stack, and optional sub-stack retrieval dimensions as other scoped artifacts. Optional `apply_when` adds natural-language circumstances for a human or agent to evaluate after candidate retrieval. Absence of `apply_when` means no additional applicability restriction beyond scope and the Guide's subject. Guides do not have `do_not_apply_when`.
+
+### Ways of Working
+
+A Way of Working establishes how teammates organize, coordinate, collaborate, and govern their work: responsibilities, decision authority, approvals, communication, reviews, and working agreements. Unlike a Guide, its `items` are not ordered instructions. Unlike a Standard, it is not primarily an expectation about how a work product is structured or implemented.
+
+Each Way of Working has a nonempty `category` array and nonempty `items` array. Each item has a stable `id`, human-readable `name`, and substantive `description`. Optional `apply_when` captures circumstances such as collaboration with AI agents. The inherited `inherits` property allows an agent-specific working agreement to specialize a general agreement using the [same universal merge rules](#artifact-inheritance); matching item IDs replace inherited items in full.
+
+Optional `guided_by_principles`, `informed_by_strategy`, and `stems_from_decisions` express meaningful domain relationships. `related_ways_of_working` is associative only and does not imply inheritance.
 
 ### References
 
@@ -138,7 +147,7 @@ The unscoped types are unscoped deliberately:
 
 ### Category is not scope
 
-`socius-standard`, `socius-reference`, `socius-principle-derived`, and `socius-term` carry category-based taxonomy. For Standards and References, `category` is a nonempty array of labels; the other artifact types retain their own schema-defined shapes. Category groups artifacts for retrieval and says nothing by itself about where an artifact applies. A derived principle's `category` may well hold something stack-shaped in practice (`backend`, say), but no schema treats it as scope, and consumers shouldn't either.
+`socius-standard`, `socius-reference`, `socius-way-of-working`, `socius-principle-derived`, and `socius-term` carry category-based taxonomy. For Standards, References, and Ways of Working, `category` is a nonempty array of labels; the other artifact types retain their own schema-defined shapes. Category groups artifacts for retrieval and says nothing by itself about where an artifact applies. A derived principle's `category` may well hold something stack-shaped in practice (`backend`, say), but no schema treats it as scope, and consumers shouldn't either.
 
 ## Composition
 
