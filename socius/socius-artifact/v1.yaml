@@ -2,7 +2,7 @@ $schema: https://json-schema.org/draft/2020-12/schema
 $id: https://schemas.cavatinasolutions.com/socius/socius-artifact/v1.yaml
 $comment: '1.0'
 title: Socius Artifact
-description: Base schema for Cavatina engineering knowledge artifacts.
+description: Base schema for Socius organizational practice and contextual artifacts.
 type: object
 required:
   - schema
@@ -12,14 +12,34 @@ required:
 properties:
   schema:
     type: string
-    description: Schema version.
-    pattern: ^socius-[a-z0-9-]+/v[0-9]+$
+    description: The concrete artifact type and major version of the contract this artifact follows. The abstract base types are excluded, since nothing is an artifact of a base type.
+    pattern: ^socius-(?!(?:scoped-)?artifact/)[a-z0-9-]+/v[0-9]+$
   id:
     type: string
     description: Stable unique identifier.
   title:
     type: string
     description: Human-readable title.
+  inherits:
+    type: string
+    minLength: 1
+    description: Optional ID of a parent artifact of exactly the same Socius type. Consumers verify the reference and resolve inheritance using the domain-wide merge rules.
+  validation_deferred:
+    type: boolean
+    default: false
+    description: When true, full artifact-type validation is deferred until after same-type inheritance resolution. Stored-form structural checks still apply. Requires inherits.
   summary:
     type: string
     description: A few sentence overview of the artifact. Not the actual full content.
+allOf:
+  - if:
+      properties:
+        validation_deferred:
+          const: true
+      required:
+        - validation_deferred
+    then:
+      properties:
+        inherits: true
+      required:
+        - inherits

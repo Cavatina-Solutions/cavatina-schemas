@@ -2,46 +2,57 @@ $schema: https://json-schema.org/draft/2020-12/schema
 $id: https://schemas.cavatinasolutions.com/socius/socius-standard/v1.yaml
 $comment: '1.0'
 title: Socius Standard
+description: Authoritative expectations governing one cohesive subject within the organization's practices.
 allOf:
   - $ref: https://schemas.cavatinasolutions.com/socius/socius-scoped-artifact/v1.yaml
 type: object
 required:
   - category
-  - rule
-  - apply_when
-  - do_not_apply_when
+  - expectations
 properties:
   schema:
     const: socius-standard/v1
   category:
-    type: string
-    description: The category that the standard pertains to.
-  rule:
-    type: string
-    description: The single engineering standard being defined.
+    type: array
+    minItems: 1
+    uniqueItems: true
+    items:
+      type: string
+      minLength: 1
+    description: Taxonomy labels for finding standards about this subject; not applicability scope.
   apply_when:
     type: array
+    minItems: 1
     items:
       type: string
-    description: Conditions that indicate the engineering standard should be applied.
-  do_not_apply_when:
+    description: Optional natural-language circumstances that further constrain when this Standard applies; interpreted by the contributor or agent.
+  expectations:
     type: array
+    minItems: 1
+    description: Related authoritative expectations about one cohesive subject. IDs must be unique within this Standard; consumers check this and resolve inherited IDs.
     items:
-      type: string
-    description: Conditions that indicate the engineering standard is outside its intended scope and another standard or approach should be considered.
-  exceptions:
-    type: array
-    items:
-      type: string
-    description: Legitimate exceptions where the rule should not be followed.
+      type: object
+      required:
+        - id
+        - statement
+      properties:
+        id:
+          type: string
+          minLength: 1
+          description: Stable expectation identifier. Under universal inheritance, a matching ID recursively merges properties with the inherited item.
+        statement:
+          type: string
+          minLength: 1
+          description: Substantive expectation, including relevant qualifications where needed.
+      additionalProperties: false
   related_standards:
     type: array
     items:
       type: string
-    description: Related Engineering Standard IDs (must exist).
+    description: IDs of related Standards; these links do not imply inheritance or precedence.
   notes:
     type: array
     items:
       type: string
-    description: Concise implementation notes.
+    description: Concise supplementary notes about this Standard.
 unevaluatedProperties: false

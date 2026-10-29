@@ -15,6 +15,7 @@ properties:
     const: socius-decision/v1
   date:
     type: string
+    format: date
     description: Date the decision was made.
   objective:
     type: string
@@ -32,6 +33,8 @@ properties:
     type: array
     items:
       type: object
+      required:
+        - name
       properties:
         name:
           type: string
@@ -65,7 +68,7 @@ properties:
     type: array
     items:
       type: string
-    description: IDs of the Engineering Principles that guided this decision.
+    description: IDs of the Principles that guided this decision.
   informed_by_operating_context:
     type: array
     items:
@@ -75,23 +78,23 @@ properties:
     type: array
     items:
       type: string
-    description: IDs of the Engineering Strategy entries that motivated this decision.
+    description: IDs of the Strategy entries that motivated this decision.
   driven_by_goal:
     type: array
     items:
       type: string
-    description: IDs of the Engineering Goal entries that motivated this decision.
+    description: IDs of the Goal entries that motivated this decision.
   resulting_standards:
     type: array
     items:
       type: string
-    description: IDs of the Engineering Standards that were created or materially updated as a result of this decision.
+    description: IDs of the Standards that were created or materially updated as a result of this decision.
   supersedes:
     type: array
     items:
       type: string
-    description: IDs of earlier engineering decisions replaced or materially changed by this decision.
+    description: IDs of earlier Decisions replaced or materially changed by this decision.
   superseded_by:
     type: string
-    description: ID of a later engineering decision that replaces or materially changes this decision.
+    description: ID of a later Decision that replaces or materially changes this decision.
 unevaluatedProperties: false

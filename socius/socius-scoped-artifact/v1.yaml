@@ -2,7 +2,7 @@ $schema: https://json-schema.org/draft/2020-12/schema
 $id: https://schemas.cavatinasolutions.com/socius/socius-scoped-artifact/v1.yaml
 $comment: '1.0'
 title: Socius Scoped Artifact
-description: Base schema for Cavatina engineering knowledge artifacts containing scope.
+description: Base schema for Socius artifacts that carry scope.
 allOf:
   - $ref: https://schemas.cavatinasolutions.com/socius/socius-artifact/v1.yaml
 type: object
@@ -20,3 +20,6 @@ properties:
   stack:
     type: string
     description: Either 'general' or the stack that the artifact pertains to.
+  sub_stack:
+    type: string
+    description: Optional narrower technology or platform within the declared stack; absent when no specialization is needed.

@@ -4,6 +4,7 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { basename, join, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import addFormats from 'ajv-formats';
 import { Ajv2020 } from 'ajv/dist/2020';
 import { load } from 'js-yaml';
 
@@ -130,6 +131,7 @@ function checkMetadata(schemas: readonly Schema[]): void {
 // Registers everything first so absolute `$ref`s resolve locally instead of over the network.
 function checkCompiles(schemas: readonly Schema[]): void {
     const ajv = new Ajv2020({ strict: true, allErrors: true });
+    addFormats(ajv);
     const registered: Schema[] = [];
 
     for (const schema of schemas) {

@@ -12,10 +12,10 @@ properties:
     const: socius-principle-core/v1
   statement:
     type: string
-    description: The enduring engineering principle.
+    description: The enduring principle.
   rationale:
     type: string
-    description: Engineering reasoning that explains why this principle exists.
+    description: Reasoning that explains why this principle exists.
   internal_expression:
     type: string
     description: How the principle is expressed within the company and among team members.
