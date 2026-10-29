@@ -12,12 +12,12 @@ properties:
     const: socius-strategy/v1
   strategy:
     type: string
-    description: The team's intentional engineering direction or posture.
+    description: The team's intentional direction or posture.
   guided_by_principles:
     type: array
     items:
       type: string
-    description: IDs of Engineering Principles that guide this strategy.
+    description: IDs of Principles that guide this strategy.
   informed_by_operating_context:
     type: array
     items:
@@ -25,7 +25,7 @@ properties:
     description: IDs of Operating Context entries that informed this strategy.
   rationale:
     type: string
-    description: Engineering reasoning behind adopting this strategy.
+    description: Reasoning behind adopting this strategy.
   re_evaluate_when:
     type: array
     items:

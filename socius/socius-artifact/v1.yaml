@@ -12,8 +12,8 @@ required:
 properties:
   schema:
     type: string
-    description: Schema version.
-    pattern: ^socius-[a-z0-9-]+/v[0-9]+$
+    description: The concrete artifact type and major version of the contract this artifact follows. The abstract base types are excluded, since nothing is an artifact of a base type.
+    pattern: ^socius-(?!(?:scoped-)?artifact/)[a-z0-9-]+/v[0-9]+$
   id:
     type: string
     description: Stable unique identifier.
@@ -39,5 +39,7 @@ allOf:
       required:
         - validation_deferred
     then:
+      properties:
+        inherits: true
       required:
         - inherits

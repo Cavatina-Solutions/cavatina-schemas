@@ -2,7 +2,7 @@ $schema: https://json-schema.org/draft/2020-12/schema
 $id: https://schemas.cavatinasolutions.com/socius/socius-person/v1.yaml
 $comment: '1.0'
 title: Socius Person
-description: Identifies a person relevant to the engineering environment and provides contextual information about their organizational role.
+description: Identifies a person relevant to the organization's work and provides contextual information about their organizational role.
 allOf:
   - $ref: https://schemas.cavatinasolutions.com/socius/socius-artifact/v1.yaml
 type: object
@@ -16,7 +16,7 @@ properties:
     description: Canonical name of the person.
   affiliations:
     type: array
-    description: Organizational affiliations relevant to understanding the person's role in engineering work.
+    description: Organizational affiliations relevant to understanding the person's role in the work.
     items:
       type: object
       required:

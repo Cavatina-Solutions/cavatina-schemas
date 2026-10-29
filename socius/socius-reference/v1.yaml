@@ -23,13 +23,18 @@ properties:
   items:
     type: array
     minItems: 1
-    description: Named pieces of factual reference information about the subject.
+    description: Identified, named pieces of factual reference information about the subject. Universal inheritance adds new IDs and recursively merges matching IDs by property.
     items:
       type: object
       required:
+        - id
         - name
         - description
       properties:
+        id:
+          type: string
+          minLength: 1
+          description: Stable item identifier for universal inheritance.
         name:
           type: string
           minLength: 1
@@ -50,8 +55,8 @@ properties:
       properties:
         type:
           type: string
-          minLength: 1
-          description: Socius artifact type being referenced, without a version (for example, socius-standard).
+          pattern: ^socius-(?!(?:scoped-)?artifact$)[a-z0-9-]+$
+          description: Concrete Socius artifact type being referenced, without a version (for example, socius-standard).
         id:
           type: string
           minLength: 1

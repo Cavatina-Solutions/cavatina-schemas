@@ -24,7 +24,7 @@ Each file's `$id` is its published URL, `https://schemas.cavatinasolutions.com/s
 
 ## Base schemas
 
-Two abstract schemas hold the properties shared across artifact types. Both are abstract — nothing declares itself as either one, and every concrete type extends one of them.
+The base schemas hold the properties shared across artifact types. They are abstract — nothing declares itself as either one, and every concrete type extends one of them.
 
 `socius-artifact` defines what every artifact carries, without exception:
 
@@ -43,15 +43,15 @@ Neither base closes with `unevaluatedProperties`, and neither should. A base tha
 
 | Type                       | Scoped | Role                                                                          |
 | -------------------------- | :----: | ----------------------------------------------------------------------------- |
-| `socius-principle-core`    |        | Foundational organizational beliefs                                 |
-| `socius-principle-derived` |        | More specific enduring beliefs derived from Core Principles (`derived_from`)                       |
+| `socius-principle-core`    |        | Foundational organizational beliefs                                           |
+| `socius-principle-derived` |        | More specific enduring beliefs derived from Core Principles (`derived_from`)  |
 | `socius-operating-context` |   ✓    | Dated, measurement-backed snapshots of the current environment                |
 | `socius-strategy`          |   ✓    | Intentional engineering direction, guided by principles and operating context |
 | `socius-goal`              |   ✓    | A concrete outcome under a `parent_strategy`, with `success_criteria`         |
 | `socius-decision`          |   ✓    | A specific choice, with `options_considered`, `rationale`, and `consequences` |
-| `socius-standard`          |   ✓    | Authoritative expectations for a cohesive subject, with optional inheritance          |
-| `socius-deviation`         |   ✓    | Documented, scoped departure from a Standard, optionally decision-backed       |
-| `socius-guide`             |   ✓    | Instructions for accomplishing an activity, ordered by default               |
+| `socius-standard`          |   ✓    | Authoritative expectations for a cohesive subject, with optional inheritance  |
+| `socius-deviation`         |   ✓    | Documented, scoped departure from a Standard, optionally decision-backed      |
+| `socius-guide`             |   ✓    | Instructions for accomplishing an activity, ordered by default                |
 | `socius-way-of-working`    |   ✓    | Team collaboration, responsibilities, authority, and working agreements       |
 | `socius-reference`         |   ✓    | Reusable factual information organized into named items                       |
 | `socius-toolchain`         |   ✓    | Required tools, version policy, and permitted exceptions                      |
@@ -73,7 +73,7 @@ Each defines the structure unique to its kind of knowledge — a principle has a
 
 Roughly upstream to downstream: principles and operating context feed strategy; strategy drives goals and decisions; decisions produce standards; standards express the resulting expectations.
 
-The four Terminology artifact types are **vocabulary**. `socius-term` and `socius-alias` record what a word means and what a shorthand expands to; `socius-organization` and `socius-person` name the entities those words refer to. They're knowledge like everything else here — the difference is structural. Other artifact types can express domain-specific influences or parentage, but those relationships do not automatically imply inheritance. Vocabulary derives from nothing and feeds nothing. It's what the rest is written in terms of.
+The Terminology artifact types are **vocabulary**. `socius-term` and `socius-alias` record what a word means and what a shorthand expands to; `socius-organization` and `socius-person` name the entities those words refer to. They're knowledge like everything else here — the difference is structural. Other artifact types can express domain-specific influences or parentage, but those relationships do not automatically imply inheritance. Vocabulary derives from nothing and feeds nothing. It's what the rest is written in terms of.
 
 ### Standards: authoring and retrieval
 
@@ -97,7 +97,7 @@ Determining what the organization expects in a given situation requires examinin
 
 ### Guides
 
-A Guide explains how to accomplish an activity rather than establishing authoritative expectations. It has an `objective` and identified, named `instructions` (each with `id`, `name`, and `instructions`); `is_ordered` defaults to `true`, meaning the sequence matters, and can be set to `false` for independently usable instructional elements. Optional `attachments` reference supporting materials. Guide instructions participate in the universal ID-based array merge: matching IDs identify the same instruction and their properties merge recursively; new IDs add instructions. Each instruction may carry an integer `order`. When `is_ordered` is true, the resolved instructions are sequenced by `order`, not their physical array positions. A child can change an inherited instruction's order or prose independently. New instructions must resolve to complete entries; duplicate or missing effective order values require validation/handling rather than guessing.
+A Guide explains how to accomplish an activity rather than establishing authoritative expectations. It has an `objective` and identified, named `instructions` (each with `id`, `name`, and `instructions`); `is_ordered` defaults to `true`, meaning the sequence matters, and can be set to `false` for independently usable instructional elements. Optional `attachments` reference supporting materials. Guide instructions participate in the universal ID-based array merge: matching IDs identify the same instruction and their properties merge recursively; new IDs add instructions. Unless `is_ordered` is `false`, every instruction carries an integer `order`, and the resolved instructions are sequenced by it, not by their physical array positions. A child can change an inherited instruction's order or prose independently. New instructions must resolve to complete entries. The schema requires `order` on every instruction of an ordered Guide; that no two instructions share an order is beyond JSON Schema, so consumers check it and reject a duplicate rather than guessing.
 
 Guides inherit the same organization, project, stack, and optional sub-stack retrieval dimensions as other scoped artifacts. Optional `apply_when` adds natural-language circumstances for a human or agent to evaluate after candidate retrieval. Absence of `apply_when` means no additional applicability restriction beyond scope and the Guide's subject. Guides do not have `do_not_apply_when`.
 
@@ -111,7 +111,7 @@ Optional `guided_by_principles`, `informed_by_strategy`, and `stems_from_decisio
 
 ### References
 
-A Reference captures reusable factual information about a subject, such as the behavior, capabilities, or constraints of a technology, platform, or system. It does not itself establish a Standard, record a Decision, or prescribe a procedure. Reference content is organized into a nonempty `items` collection; each item has a `name` and a prose `description`. Keep each Reference focused on a coherent subject rather than accumulating unrelated facts.
+A Reference captures reusable factual information about a subject, such as the behavior, capabilities, or constraints of a technology, platform, or system. It does not itself establish a Standard, record a Decision, or prescribe a procedure. Reference content is organized into a nonempty `items` collection; each item has a stable `id`, a `name` and a prose `description`, so an inheriting Reference can update or add one fact by ID without restating the rest. Keep each Reference focused on a coherent subject rather than accumulating unrelated facts.
 
 References inherit the organization, project, stack, and optional sub-stack dimensions of scoped artifacts. A required, nonempty `category` array provides additional taxonomy for retrieving references about a subject. Consumers can also follow optional `related_artifacts` associations to retrieve other relevant material. A related Reference remains independently meaningful; an association does not imply inheritance. References can use the optional universal `inherits` property if an author intentionally needs same-type specialization, but it is not required for ordinary reference relationships.
 
@@ -119,20 +119,21 @@ When information depends on a vendor version or other external circumstances, st
 
 ## Artifact inheritance
 
-Inheritance is a **domain-wide, explicit** composition mechanism, not a Standard-specific feature. Any Socius artifact may declare `inherits` with the ID of one parent artifact of the **same artifact type** (the same `schema` discriminator). Different types, missing parents, and cycles are errors; a consumer must not guess a replacement. A parent relationship such as `parent_strategy`, a generic association, and historical `supersedes` are not inheritance.
+Inheritance is a **domain-wide, explicit** composition mechanism, not a Standard-specific feature. Any Socius artifact may declare `inherits` with the ID of one parent artifact of the **same artifact type** (the same `schema` discriminator, major version included, so a `v2` never inherits a `v1`). Different types, different major versions, missing parents, and cycles are errors; a consumer must not guess a replacement. A parent relationship such as `parent_strategy`, a generic association, and historical `supersedes` are not inheritance.
 
 By default, each stored artifact must be valid against its artifact-type schema independently. A child with `inherits` may instead declare `validation_deferred: true`: its stored representation may omit fields that inheritance supplies, but the **resolved artifact must satisfy the complete artifact-type schema**. This does not change the artifact's type or weaken what constitutes a complete artifact. The child must still declare its own `schema`, `id`, and `inherits` so it can be identified and resolved. Resolve the chain from the oldest ancestor to the selected child using these rules:
 
-| Value kind | Merge behavior |
-| --- | --- |
-| Property absent in child, or child value `null` | Keep inherited value |
-| Non-null scalar | Child replaces parent |
-| Object | Recursively merge properties |
-| Array of primitive values | Concatenate parent then child, preserving order |
+| Value kind                          | Merge behavior                                                                         |
+| ----------------------------------- | -------------------------------------------------------------------------------------- |
+| Property absent in child            | Keep inherited value                                                                   |
+| Child value `null`                  | Remove the inherited value                                                             |
+| Non-null scalar                     | Child replaces parent                                                                  |
+| Object                              | Recursively merge properties                                                           |
+| Array of primitive values           | Child array replaces parent array                                                      |
 | Array of objects identified by `id` | Add new IDs; matching IDs identify the same object, whose properties merge recursively |
-| Array of objects without `id` | Child array replaces parent array |
+| Array of objects without `id`       | Child array replaces parent array                                                      |
 
-The child's `id`, `schema`, and `inherits` are structural metadata, not inherited payload values. When validation is not deferred, all required fields must be present in the stored child. When it is deferred, missing required content must be supplied through resolution. A resolved artifact retains the child's identity and contract. Consumers should detect duplicate IDs within identified-item arrays rather than silently resolving ambiguity. Arrays of primitive values are concatenated, not implicitly treated as a logical AND or OR; in particular, natural-language `apply_when` conditions remain subject to human/agent interpretation.
+The child's `id`, `schema`, `inherits` and `validation_deferred` are structural metadata, not inherited payload values. A resolved artifact carries the child's `id`, `schema` and `inherits`, and no `validation_deferred`: once resolved, nothing about it is deferred. When validation is not deferred, all required fields must be present in the stored child. When it is deferred, missing required content must be supplied through resolution. A resolved artifact retains the child's identity and contract. Consumers should detect duplicate IDs within identified-item arrays rather than silently resolving ambiguity. A child's array of primitive values replaces its parent's, so a child can narrow a list as well as extend it, by stating the whole list it wants. `apply_when` follows the same rule: a child's conditions are its own, and a parent condition still applies to the child only where the child restates it. A `null` removes an inherited value, which lets a child drop an optional property such as `sub_stack`; it applies only in a deferred child, since a complete child's stored form is validated on its own and the schemas do not accept `null`. Nulling a required property leaves the resolved artifact incomplete, which fails.
 
 ### Validation timing
 
@@ -160,7 +161,7 @@ Most artifacts describe practices or context that apply somewhere in particular.
 - `stack` — the stack the artifact pertains to, or `general`
 - `sub_stack` — optional narrower technology or platform within the stack (for example, `hubspot` under `frontend`)
 
-The first three are required on every scoped type; `sub_stack` is optional. **The three base scope fields are always stated, never inferred from absence** — an artifact that applies everywhere says so with `shared` / `shared` / `general` rather than by leaving the fields out.
+`organization`, `project` and `stack` are required on every scoped type; `sub_stack` is optional. **The three base scope fields are always stated, never inferred from absence** — an artifact that applies everywhere says so with `shared` / `shared` / `general` rather than by leaving the fields out.
 
 `organization` and `project` can name modeled Organization and Project artifacts, respectively, while the special value `shared` denotes unrestricted scope. `stack` and `sub_stack` remain free strings whose values are a matter of consumer convention; nothing here enumerates their valid values.
 
@@ -194,13 +195,15 @@ An artifact declares its contract through `schema`:
 schema: socius-principle-core/v1
 ```
 
-That identifier names both the artifact type and the version of its contract, so a consumer can resolve the right schema and validate against it. The base constrains the format to `^socius-[a-z0-9-]+/v[0-9]+$`, and each type pins its own exact value — so `schema` is also the discriminator that tells you which type you're holding.
+That identifier names both the artifact type and the version of its contract, so a consumer can resolve the right schema and validate against it. The base constrains the format to `^socius-(?!(?:scoped-)?artifact/)[a-z0-9-]+/v[0-9]+$`, which also refuses the two abstract base types, and each type pins its own exact value — so `schema` is also the discriminator that tells you which type you're holding.
 
 ## Linking is by ID, not `$ref`
 
 Relationships should communicate their domain meaning when that meaning exists. For example, `guided_by_principles`, `derived_from`, `parent_strategy`, `informed_by_operating_context`, `resulting_standards`, and `supersedes` / `superseded_by` describe specific influences, parentage, outcomes, or historical replacement; they are not interchangeable with a generic association. Use individually named fields for such meaningful relationships, rather than flattening them into a generic list.
 
 When the relationship truly conveys only association, a typed `related_artifacts` collection is appropriate. A Reference uses entries with `type` (the target Socius artifact type) and `id` (the target artifact's stable ID). This does not imply that the target governs, informs, derives from, or is overridden by the Reference. Do not invent a stronger relationship merely to avoid a generic association, and do not replace meaningful relationships with generic ones simply because they could be represented that way.
+
+A link names a type by its `schema` value without the version — `socius-standard`, `socius-term` — so it holds across major versions of the target. This applies to `related_artifacts[].type` and `socius-alias`'s `resolves_to.type` alike.
 
 Fields like those above generally hold the plain `id` of another artifact as a string. So do the vocabulary links — `socius-alias`'s `resolves_to.id`, `socius-person`'s `affiliations[].organization`, `socius-organization`'s `relationships[].organization` — and the `organization` scope field itself.
 

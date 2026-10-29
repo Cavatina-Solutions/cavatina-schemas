@@ -25,7 +25,7 @@ properties:
   is_ordered:
     type: boolean
     default: true
-    description: Whether the instructions must be followed in array order; defaults to true when omitted.
+    description: Whether the instructions must be followed in sequence, by their order values; defaults to true when omitted.
   instructions:
     type: array
     minItems: 1
@@ -43,7 +43,7 @@ properties:
           description: Stable identifier for selective replacement under universal inheritance.
         order:
           type: integer
-          description: Explicit sequence position for ordered Guides; effective ordered instructions must have distinct order values. May be inherited or changed by an identified child instruction.
+          description: Sequence position, required on every instruction of an ordered Guide. Values must be distinct within the resolved Guide. May be inherited or changed by an identified child instruction.
         name:
           type: string
           minLength: 1
@@ -58,4 +58,20 @@ properties:
     items:
       type: string
     description: References to supporting templates, diagrams, checklists, or other instructional resources.
+if:
+  properties:
+    is_ordered:
+      const: false
+  required:
+    - is_ordered
+else:
+  properties:
+    instructions:
+      type: array
+      items:
+        type: object
+        properties:
+          order: true
+        required:
+          - order
 unevaluatedProperties: false

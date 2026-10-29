@@ -15,10 +15,10 @@ properties:
     const: socius-goal/v1
   parent_strategy:
     type: string
-    description: ID of the Engineering Strategy this goal belongs to.
+    description: ID of the Strategy this goal belongs to.
   objective:
     type: string
-    description: The engineering outcome this goal is intended to achieve.
+    description: The outcome this goal is intended to achieve.
   approach:
     type: string
     description: The approach the team will take to achieve the objective.
@@ -29,7 +29,7 @@ properties:
     description: Measurable indicators used to evaluate whether the goal has been achieved.
   rationale:
     type: string
-    description: Engineering reasoning behind establishing this goal.
+    description: Reasoning behind establishing this goal.
   re_evaluate_when:
     type: array
     items:

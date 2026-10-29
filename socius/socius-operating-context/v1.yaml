@@ -14,6 +14,7 @@ properties:
     const: socius-operating-context/v1
   date:
     type: string
+    format: date
     description: Date the operating context snapshot was recorded or last materially updated.
   subject:
     type: string
@@ -22,6 +23,9 @@ properties:
     type: array
     items:
       type: object
+      required:
+        - name
+        - value
       properties:
         name:
           type: string

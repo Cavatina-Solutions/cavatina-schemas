@@ -19,19 +19,19 @@ The resolver's deterministic responsibilities include candidate retrieval from s
 5. **Details request.** The resolver retrieves the selected artifacts, follows required same-type `inherits` ancestors and any explicitly requested relationships, validates the references, and composes inherited content deterministically.
 6. **Delivery projection.** Return the effective content and provenance needed to do the work. Since applicability was already negotiated, the normal execution-oriented response need not repeat `apply_when`. Retain selected artifact IDs/titles and sufficient source traceability. A diagnostic or audit view may expose conditions and the selection trail.
 
-The above is a proposed interaction model, not a final tool API or a guarantee about its exact number of calls. In particular, an agent may need a second applicability negotiation if following an inheritance or association reveals candidates with conditions that were not included in the first round. The implementation must not silently assume those conditions were satisfied.
+The above is a proposed interaction model, not a final tool API or a guarantee about its exact number of calls. In particular, an agent may need a second applicability negotiation if following an association reveals candidates with conditions that were not included in the first round. Inheritance does not: a child's own `apply_when` is the whole of its conditions. The implementation must not silently assume those conditions were satisfied.
 
 ### General inheritance contract
 
 The authoritative domain rules are in [Artifact inheritance](socius/index.md#artifact-inheritance). The implementation should enforce:
 
 - An explicit optional `inherits` ID on `socius-artifact`; one parent only.
-- Parent and child must have exactly the same artifact type/`schema` discriminator. A missing parent, wrong type, or cycle is a resolution error.
+- Parent and child must have exactly the same artifact type/`schema` discriminator, major version included. A missing parent, wrong type, or cycle is a resolution error.
 - Each stored artifact normally validates independently. A child may opt into `validation_deferred: true` (only with `inherits`) and omit fields to be supplied by its parent. The resolved result **always** must validate against the full artifact-type schema.
 - Resolve oldest ancestor first and merge toward the selected child. The final artifact has the child's identity and contract.
-- Child absent or null value means retain inherited value; non-null scalar replaces; nested objects merge recursively; primitive arrays concatenate in parent-to-child order; object arrays with `id` add by ID and recursively merge matching objects by property; object arrays without `id` replace.
-- `id`, `schema`, and `inherits` are structural metadata, not ordinary inherited content. A child may replace a descriptive title or summary like any other required scalar.
-- Treat duplicate `id` values within an identified-item array as invalid for resolution. Do not resolve them by array position or last-writer-wins within the *same* artifact.
+- A property absent in the child retains the inherited value; a child `null` removes it; a non-null scalar replaces; nested objects merge recursively; primitive arrays replace; object arrays with `id` add by ID and recursively merge matching objects by property; object arrays without `id` replace.
+- `id`, `schema`, `inherits` and `validation_deferred` are structural metadata, not ordinary inherited content. The resolved artifact carries no `validation_deferred`. A child may replace a descriptive title or summary like any other required scalar.
+- Treat duplicate `id` values within an identified-item array as invalid for resolution. Do not resolve them by array position or last-writer-wins within the _same_ artifact.
 - The rules apply across artifact types that use inheritance; they are not duplicated or modified per Standard, Guide, Reference, or Ways of Working artifact.
 
 **Example:** A frontend React Standard has expectations `layout` and `exports`; a HubSpot child inherits it, overrides `exports` by ID, and adds `entry-points`. The resolved expectation collection contains parent `layout`, child `exports`, and child `entry-points`. It retains any parent `exports` properties the child does not specify, while replacing those it does.
@@ -47,25 +47,26 @@ Two different checks are meaningful:
 
 **Important:** JSON Schema's `required` checks do not automatically become conditional because the base defines `validation_deferred`. A direct full-schema validation of a deferred, incomplete stored child may fail. An inheritance-aware validator needs a separate stored-overlay validation mode (for example, a derived validation view or a purpose-built structural pass) followed by the full post-resolution check. Do not interpret the flag as "skip all validation." A missing parent, mismatched type, cycle, invalid provided value, or incomplete merged result must fail.
 
-If the child supplies `null` as a no-op under the conceptual merge rules, the stored-overlay validation must account for that separately; ordinary non-null concrete field schemas may reject it. Whether explicit null should be supported at all remains a testable design question.
+A child's `null` removes the inherited value. The concrete schemas do not accept `null`, so only a deferred child can supply one; a stored-overlay pass must accept it there rather than reject it as a malformed value.
 
 **Guide example:** A parent Guide has `instructions: [{id: configure, name: Configure tooling, instructions: Set up tooling, order: 20}]`. A deferred child can supply `instructions: [{id: configure, order: 30}]`. The resolver matches the ID, preserves the name/prose, changes the order, and then validates the complete result.
 
-**Ordering:** When `is_ordered` is true, a Guide's effective instructions are sorted by integer `order` rather than physical array position. A child may alter `order` without changing prose, or prose without changing `order`. The implementation must define how it reports missing or duplicate effective order values and whether gaps are permitted; never guess an insertion point from source array position.
+**Ordering:** When `is_ordered` is true, a Guide's effective instructions are sorted by integer `order` rather than physical array position. A child may alter `order` without changing prose, or prose without changing `order`. The schema requires `order` on every instruction of an ordered Guide; a duplicate effective order is rejected rather than broken by array position. Gaps are permitted, which is what lets a child insert between inherited instructions.
 
-### Why primitive arrays concatenate
+### Why primitive arrays replace
 
-`apply_when` is the motivating case. The parent's and child's conditions should both be available during applicability assessment; replacing the parent's array would discard relevant constraints. Concatenation preserves them without asking the deterministic resolver to parse natural language. This same rule also applies to primitive arrays such as categories, notes, and relationship ID lists.
+A child states the whole list it means. Concatenation would let a child extend an inherited list but never narrow it: a Toolchain could add a target version and never retire one, and a Goal could never drop a success criterion it inherited. Replacing is also how arrays of unidentified objects already behave, so only identified items merge.
 
-Concatenation does **not** define whether multiple conditions mean AND, OR, or some contextual combination. That judgment belongs in the applicability negotiation, informed by the artifact and its inheritance chain. Do not turn the merged array into a boolean expression without an explicit domain rule.
+Replacing means a parent's `apply_when` does not carry into its child. Those conditions are not part of the delivered result, which is a projection after applicability has been negotiated, and a specialized artifact stating its own conditions is clearer than one whose conditions are assembled from its ancestors. A child that should apply under its parent's conditions restates them.
 
-The stored/resolved representation may contain concatenated `apply_when` even though the post-negotiation execution projection omits it. **The data model and the response projection are different things.**
+Several conditions in one `apply_when` still do not define AND, OR, or some contextual combination. That judgment belongs in the applicability negotiation. Do not turn the array into a boolean expression without an explicit domain rule.
 
 ### Relationship traversal
 
 Domain-significant relationships have explicit names (for example `guided_by_principles`, `parent_strategy`, `supersedes`). Generic associations such as Reference `related_artifacts` have only `type` and `id` and imply no authority, precedence, or inheritance. Traversing a relation can discover relevant material, but it should not automatically promote every related artifact to a governing requirement.
 
 The resolver should distinguish:
+
 - Candidate retrieval by scope and category.
 - Explicit same-type inheritance traversal needed to construct a selected artifact.
 - Optional association traversal for additional context.
@@ -91,12 +92,6 @@ This is a proposed resolver workflow, not a new schema relationship or a require
 
 ### Open implementation questions to test
 
-- **Condition presentation across inheritance:** The first candidate list should include enough parent/child applicability context to make the selection sound. Decide whether to pre-traverse ancestors for condition summaries, or to negotiate again when newly discovered parent conditions appear.
-- **Null versus schema validation:** The conceptual merge treats child null as absence. Concrete schemas generally reject null for typed fields; decide whether explicit null is supported by deferred stored-form validation or whether omission alone is the intended no-op.
-- **Required field composition:** Non-deferred children supply required scalars (including scope), replacing parent values. Deferred children may omit those fields and inherit them. Test both cases against the resolved concrete schema.
-- **Primitive-array duplicates:** Concatenation is the agreed rule. Whether a consumer deduplicates repeated values for display, while preserving provenance and original stored values, remains a separate projection choice. Do not silently alter the canonical merge semantics.
-- **Guide ordering:** Guide instructions now have IDs and optional integer `order`; resolved ordered Guides sort by `order`. Determine whether missing or duplicate effective order values are errors and how to handle ties and gaps; never infer positions from array order.
-- **Mixed object-array shapes:** Determine a reliable policy for arrays whose entries are inconsistently identified; reject ambiguous merges rather than guessing.
 - **Scope and inheritance:** A child can specialize scope (such as `sub_stack: hubspot`) while inheriting general content. The child's scope governs retrieval of that child; parent scope is not an extra hidden runtime condition unless the domain model explicitly says so.
 - **Conflict and ambiguity:** Multiple independently applicable sibling artifacts may disagree without an inheritance relationship. Do not infer a winner solely from category overlap or ordering. Expose the conflict for an appropriate decision.
 - **Errors and diagnostics:** Define useful errors for missing IDs, mismatched types, cycles, duplicate item IDs, and ambiguous selection. Preserve traceability of which source supplied each effective item.
@@ -108,17 +103,17 @@ This is a proposed resolver workflow, not a new schema relationship or a require
 
 The current [How We Code](https://github.com/Cavatina-Solutions/socius-artifacts/blob/main/docs/HOW-WE-CODE.md) is an evidence source, not a single artifact to transplant. Its real sections map to different Socius responsibilities:
 
-| HWC material | Likely destination | Boundary to preserve |
-| --- | --- | --- |
-| Domain-oriented design, vertical slicing, ownership of code, React component conventions, Redux organization, .NET project layout, Terraform layout, build/release expectations | **Standards** organized by coherent subject, stack/sub-stack and category | Group related expectations; do not recreate a single giant HWC Standard or one artifact per formatting rule |
-| Formatter, ESLint, EditorConfig, Stylelint, custom rules, make targets, git hooks, tool versions | **Canonical Toolchain configurations** and Toolchain policy | The config is authoritative for what it enforces; do not restate its rules in Standard prose |
-| Creating an application, preparing a database script, setting up a repository or running a release | **Guides** where a repeatable task procedure is actually needed | Do not turn every Standard into a Guide or duplicate the config |
-| Agent-specific coding instructions and the agent collaboration supplement | **Standards** for code-related expectations and **Ways of Working** for collaboration | Agent applicability can be expressed with `apply_when`; avoid copying generic agreements into agent-only artifacts |
-| General collaboration, authority, approvals, escalation and handoffs | **Ways of Working** | These are standing agreements, not ordered procedures |
-| Vendor behavior, framework constraints, unexpected platform limitations, tool quirks | **References** when they are facts; Standards or Decisions when they prescribe organizational choices | Distinguish external reality from the organization's chosen response |
-| Historical choices and their rationale | **Decisions** | Do not convert every inline rationale into a Decision unless it represents a meaningful choice |
-| Client- or project-specific departures documented in `PROJECT.md` | **Deviations** where an authorized departure exists | A Deviation may be recorded without a Decision; optional `backed_by_decision` can capture later formal support |
-| Project purpose, constraints, repositories, external resources | **Project** | Keep tickets, sprint state, plans, and detailed domain/architecture models in their appropriate systems/artifacts |
+| HWC material                                                                                                                                                                    | Likely destination                                                                                    | Boundary to preserve                                                                                               |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| Domain-oriented design, vertical slicing, ownership of code, React component conventions, Redux organization, .NET project layout, Terraform layout, build/release expectations | **Standards** organized by coherent subject, stack/sub-stack and category                             | Group related expectations; do not recreate a single giant HWC Standard or one artifact per formatting rule        |
+| Formatter, ESLint, EditorConfig, Stylelint, custom rules, make targets, git hooks, tool versions                                                                                | **Canonical Toolchain configurations** and Toolchain policy                                           | The config is authoritative for what it enforces; do not restate its rules in Standard prose                       |
+| Creating an application, preparing a database script, setting up a repository or running a release                                                                              | **Guides** where a repeatable task procedure is actually needed                                       | Do not turn every Standard into a Guide or duplicate the config                                                    |
+| Agent-specific coding instructions and the agent collaboration supplement                                                                                                       | **Standards** for code-related expectations and **Ways of Working** for collaboration                 | Agent applicability can be expressed with `apply_when`; avoid copying generic agreements into agent-only artifacts |
+| General collaboration, authority, approvals, escalation and handoffs                                                                                                            | **Ways of Working**                                                                                   | These are standing agreements, not ordered procedures                                                              |
+| Vendor behavior, framework constraints, unexpected platform limitations, tool quirks                                                                                            | **References** when they are facts; Standards or Decisions when they prescribe organizational choices | Distinguish external reality from the organization's chosen response                                               |
+| Historical choices and their rationale                                                                                                                                          | **Decisions**                                                                                         | Do not convert every inline rationale into a Decision unless it represents a meaningful choice                     |
+| Client- or project-specific departures documented in `PROJECT.md`                                                                                                               | **Deviations** where an authorized departure exists                                                   | A Deviation may be recorded without a Decision; optional `backed_by_decision` can capture later formal support     |
+| Project purpose, constraints, repositories, external resources                                                                                                                  | **Project**                                                                                           | Keep tickets, sprint state, plans, and detailed domain/architecture models in their appropriate systems/artifacts  |
 
 This mapping is not a completed migration or proof that every HWC paragraph fits. During migration, classify **individual cohesive subjects**, not whole sections blindly. The same section can mix enforceable expectations, factual constraints, procedures, and rationale.
 
@@ -126,9 +121,8 @@ This mapping is not a completed migration or proof that every HWC paragraph fits
 
 ### Executable inheritance examples
 
-The schema repository now includes a small [inheritance composition reference](scripts/inheritance.ts) and [behavioral tests](tests/inheritance.test.ts), invoked through `make test` after the existing schema verifier. These cover same-type parent traversal, cycles and missing references, scalar/object/array merging, identified-item updates, primitive-array concatenation, deferred post-merge completeness, and ordered Guide instructions.
-
-This reference is **not** the associative resolver or a production-ready inheritance-aware validator. In particular, a deferred stored child currently receives structural identity checks and full validation after resolution, but does not yet receive the complete per-property stored-overlay validation pass described above. That pass must be implemented before treating the validator as production-ready. The test suite and full `make verify` still need to be executed in a properly provisioned Node/Yarn environment.
+The rules above are not yet expressed as code. Where that code lives, and how it is tested against
+the schemas, is still open.
 
 ### Scope of these notes
 

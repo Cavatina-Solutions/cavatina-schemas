@@ -14,9 +14,12 @@ properties:
     type: array
     items:
       type: object
+      required:
+        - id
       properties:
         id:
           type: string
+          minLength: 1
           description: Stable identifier for the tool within the toolchain. Also identifies the tool's canonical configuration directory when one exists.
         description:
           type: string
@@ -42,6 +45,9 @@ properties:
           type: array
           items:
             type: object
+            required:
+              - condition
+              - expectation
             properties:
               condition:
                 type: string

@@ -14,14 +14,6 @@ Everything known to need doing here. Status is the section an item sits in. Work
 
 The README's "Publishing" section is a placeholder. Write down how `schemas.cavatinasolutions.com` is served from this repo (the `CNAME` suggests GitHub Pages), what triggers a publish, and how long a change takes to reach consumers.
 
-### Verify and review the Socius schema feature branch
-
-**Depends on:** Active artifact modeling
-
-**Relates to:** `feat/socius-standard-model`, `make verify`
-
-Run repository verification and representative validation fixtures for new and changed contracts. Inspect inheritance edge cases, references, and schema consistency before deciding whether the feature branch is ready to merge. Inheritance behavioral tests have been added to `make test`, but execution of the full suite has not yet been confirmed for this branch.
-
 ### Reconcile schema contracts with HWC migration examples
 
 **Depends on:** Current artifact definitions
@@ -30,21 +22,13 @@ Run repository verification and representative validation fixtures for new and c
 
 Test representative real material against Standards, Guides, Ways of Working, References, Toolchains, Decisions, and Deviations. Establish the boundary between authoritative tool configurations and prose. Coordinate actual Practices content migration in its own repository.
 
-### Determine insertion ordering for inherited Guide instructions
-
-**Depends on:** Guide instruction IDs and shared inheritance semantics
-
-**Relates to:** `socius-guide`, `socius-artifact.inherits`
-
-Guide instructions now have stable IDs, so selective replacement works through universal inheritance. Guide instructions now have optional integer `order` and matching IDs merge recursively. Confirm whether missing or duplicate effective order values are errors, and whether gaps are permitted; order is not inferred from array position.
-
 ### Review inheritance validation and applicability semantics
 
 **Depends on:** Shared inheritance semantics
 
 **Relates to:** `socius-artifact.inherits`, `apply_when`, `SOCIUS-FUTURE-NOTES.md`
 
-Behavioral tests now cover independent and deferred completion, complete post-resolution validation, recursive identified-item merges, primitive arrays, same-type checks, missing parents, cycles, duplicate IDs, and Guide order. Still implement/test a strict stored-overlay structural validation pass, null policy, and presentation of inherited applicability conditions during negotiation. Clarify how conditions are interpreted without inventing boolean semantics.
+Unit tests cover independent and deferred completion, post-resolution validation at every level of a chain, identified-item merges, primitive-array replacement, null removal, same-type and same-version checks, missing parents, cycles, duplicate IDs and Guide order, for every artifact type. A child's `null` removes an inherited value, and a child's `apply_when` is the whole of its conditions. Still open: whether a separate stored-overlay pass adds anything beyond earlier diagnostics (see the analysed concern on deferred validation).
 
 ### Define deviation approval workflow and migration guidance
 
@@ -71,7 +55,6 @@ Coordinate schema links, folder layout, and terminology updates in the Practices
 `socius/index.md` declares the domain pre-stable: which properties belong on which artifact type, and which are required, is still open. Settle the active contracts, then decide when to remove the pre-stable note so versioning guarantees apply as written. This is a broader stabilization milestone, not a prerequisite for recording new work items.
 
 ---
-
 
 ## In progress
 
@@ -129,8 +112,66 @@ Clarify which facts and coordination state are maintained centrally in Practices
 
 ---
 
-
 ## Done
+
+### Bring the older schemas up to the newer types' conventions
+
+**Depends on:** nothing
+
+**Relates to:** concerns on empty item objects, type naming, engineering wording and free-string
+dates
+
+A link names an artifact type by its `schema` value without the version (`socius-term`), and
+Reference's `related_artifacts[].type` is checked against that pattern. Measurements require
+`name` and `value`, Decision options `name`, Toolchain tools `id`, and their exceptions
+`condition` and `expectation`. The engineering-specific descriptions are generalized, and `date`
+on Decisions and Operating Contexts has `format: date`; `observed_at` stays free because it takes
+a date or a time.
+
+### Reject duplicate item IDs wherever they appear
+
+**Depends on:** nothing
+
+**Relates to:** `socius/index.md` → "Artifact inheritance"; the `expectations`, `instructions` and
+`items` descriptions
+
+The schemas say item IDs are unique within an artifact and that consumers check it. The reference
+merge rules only check when a parent and child both carry the array, so a Standard that inherits
+nothing, or an array only the parent holds, accepts duplicate IDs. Every artifact the resolver
+validates, stored or resolved, is checked for a repeated ID in every identified array, nested ones
+included, and the tests fail without the check.
+
+### Stop an artifact declaring an abstract type
+
+**Depends on:** nothing
+
+**Relates to:** `socius-artifact`, `socius-scoped-artifact`; `socius/index.md` → "Base schemas"
+
+The index says nothing declares itself as a base, but `schema: socius-artifact/v1` matches the
+base's pattern and validates against the open base. The base's `schema` pattern
+excludes both base types, so declaring one fails validation.
+
+### Verify and review the Socius schema feature branch
+
+**Depends on:** Active artifact modeling
+
+**Relates to:** `feat/socius-standard-model`, `make verify`
+
+`make verify` runs and passes. Every schema compiles under Ajv's strict mode, which the base's
+deferral condition and Project's `format: uri` had prevented. Every artifact type has a unit test
+of its contract under `tests/unit/socius/`, and the inheritance rules are tested against each
+type. The branch was audited against the HWC; what that turned up is in `CONCERNS.md`.
+
+### Determine insertion ordering for inherited Guide instructions
+
+**Depends on:** Guide instruction IDs and shared inheritance semantics
+
+**Relates to:** `socius-guide`, `socius-artifact.inherits`
+
+The schema requires an integer `order` on every instruction of a Guide that is not
+`is_ordered: false`. A duplicate effective order is rejected by consumers, since JSON Schema
+cannot express it. Gaps are permitted, which is how a child inserts between inherited
+instructions.
 
 ### Put the repo on the Socius toolchain
 
@@ -215,7 +256,6 @@ Retired `socius-guidance`, updated the Socius index, and documented Standards ve
 ### Introduce Project scope support and shared sub-stack
 
 Added optional `sub_stack` to scoped artifacts and introduced the unscoped Project artifact with organizational relationships and external resource links.
-
 
 ### Add stable IDs to Guide instructions
 
