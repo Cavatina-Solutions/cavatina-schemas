@@ -2,7 +2,7 @@
 
 The Socius schemas define the structure and validation contracts for **organizational practices and contextual artifacts** — the principles, strategies, decisions, standards, and other material that describe how an organization knows, chooses, and works.
 
-What lives here is the contract: the shape an artifact must take to be created, validated, and consumed consistently. The artifacts themselves live wherever their authors keep them.
+What lives here is the published contract: the shape an artifact must take to be created, validated, and consumed consistently. **Socius owns the domain model and resolver behavior**; this repository distributes its schemas and checks their integrity. During the ownership transition these definitions remain editable drafts here, but once the Socius publishing pipeline is established they should be synchronized from the Socius source rather than independently maintained in both repositories. Artifact instances live wherever their authors keep them.
 
 ## Status
 
