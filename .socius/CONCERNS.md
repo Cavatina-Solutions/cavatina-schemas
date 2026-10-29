@@ -6,6 +6,14 @@ Anything noticed that might be a problem. Status is the section a concern sits i
 
 ## Raised
 
+### Records cite tests that are not in the repo
+
+**Relates to:** work item "Decide long-term contract testing boundary"
+
+The Done item "Verify and review the Socius schema feature branch" and the concern on Reference
+item identity point at tests under `tests/unit/`, which were left out of `main` while that
+boundary is decided.
+
 ---
 
 ## Analysed
