@@ -6,6 +6,22 @@ Everything known to need doing here. Status is the section an item sits in. Work
 
 ## To do
 
+### Establish Socius-owned schema publishing
+
+**Depends on:** Socius repository domain-model setup
+
+**Relates to:** Socius domain, published `socius/` contracts, schema synchronization
+
+Move authoritative Socius domain/schema editing into Socius and establish a one-way publication workflow into this repository. Avoid independently editing generated outputs after the handoff. Determine how updates are reviewed, versioned, and synchronized. The current feature branch remains the design baseline until the new source and pipeline are established.
+
+### Decide long-term contract testing boundary
+
+**Depends on:** Socius publishing workflow
+
+**Relates to:** `scripts/verify.ts`, Socius resolver npm package, generated schemas
+
+Keep publication integrity checks here (schema compilation, IDs, references, versions). Keep inheritance/resolver behavior tests with Socius. Decide whether a small number of consumer contract fixtures should also run here without duplicating Socius's implementation tests.
+
 ### Document hosting and publishing
 
 **Depends on:** nothing
