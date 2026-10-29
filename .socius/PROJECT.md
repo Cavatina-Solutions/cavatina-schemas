@@ -1,6 +1,6 @@
 # Project
 
-The single source of truth for Cavatina Solutions' public JSON Schemas. What needs doing is in
+The publication repository for Cavatina Solutions' public JSON Schemas. Each producing domain owns its definitions; for Socius, that source of truth is the Socius project. What needs doing is in
 `WORK-ITEMS.md`; what has been noticed and might be a problem is in `CONCERNS.md`.
 
 ---
@@ -14,8 +14,8 @@ can be referenced and relied on.
 ## Premise
 
 A schema's path in this repo is its path on `https://schemas.cavatinasolutions.com/`, and its `$id`
-is that URL. Files are served as they are, with no build step, so what is reviewed here is exactly
-what consumers fetch.
+is that URL. Files are served as they are, with no build step in this repository, so what is reviewed here is exactly
+what consumers fetch. Domain-owned pipelines may generate or synchronize files into this repository before review and publication.
 
 A published URL is a contract. Only the major version is a URL; minors are edited in place and may
 only ever accept more than before, so a consumer pinned to `v1` keeps validating what it validated.
@@ -29,13 +29,13 @@ The Socius domain describes how an organization operates: what it knows, believe
 requires, and does. Engineering is the initial and primary use case, but the underlying
 artifact concepts are not inherently limited to software development.
 
-The schemas are the documented domain model, not an independent exercise in data formatting.
+The schemas publish the documented domain model, not an independent exercise in data formatting. Socius owns its domain definitions and resolver behavior; this repository owns publication and contract-integrity checks.
 Understanding how humans and AI teammates find, interpret, and apply organizational practices
 is part of discovering and refining that model. A new teammate should be able to understand
 which practices govern their work, why they are relevant, and how specialized practices relate
 to broader ones without knowing the internals of a particular Socius implementation.
 
-Schema design therefore includes the information and relationships needed for retrieval,
+Domain design therefore includes the information and relationships needed for retrieval,
 applicability, and resolution. For example, scoped artifacts declare their organization,
 project, stack, and optional sub-stack; Standards also provide category-based retrieval and
 explicit expectation inheritance. Natural-language applicability conditions can require human
