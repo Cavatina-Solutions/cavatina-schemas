@@ -12,7 +12,7 @@ The resolver's deterministic responsibilities include candidate retrieval from s
 
 ### Proposed negotiation
 
-1. **Request.** A caller asks for an artifact type (for example Standards), relevant keywords/categories, and known work context: organization, project, stack, and optional sub-stack. Other useful context may include environment, actor, task, or technology. The caller may not know every relevant keyword in advance.
+1. **Request.** A caller asks for an artifact type (for example Standards), relevant keywords/categories, and known work context: organization, project, stack, and sub-stack. Other useful context may include environment, actor, task, or technology. The caller may not know every relevant keyword in advance.
 2. **Candidate discovery.** The resolver searches structured scope, taxonomy, and indexed associations. Include applicable broad `shared` organization/project and `general` stack candidates, and appropriately scoped sub-stack candidates. A broad React lookup should not automatically return every HubSpot-specific specialization. Category is taxonomy, not a scope boundary.
 3. **Lightweight response.** Return candidate IDs and titles/names with the relevant natural-language `apply_when` statements (and enough context to distinguish candidates), **not** full content. A missing `apply_when` adds no additional natural-language condition.
 4. **Applicability negotiation.** The agent/human interprets conditions against the task and returns selected candidate IDs. Do not silently equate a keyword match with applicability. If applicability is ambiguous, seek clarification rather than fabricating certainty.

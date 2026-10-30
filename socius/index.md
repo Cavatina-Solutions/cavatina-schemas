@@ -83,7 +83,7 @@ A Standard may include an optional `rationale` explaining **why** its expectatio
 
 Canonical Toolchain configurations own conventions they already express and enforce, such as formatting and lint rules. Standards do not duplicate those configurations in prose. Guides describe task procedures rather than defining a Standard's expectations.
 
-**Retrieval starts with the scoped artifact dimensions.** A consumer uses `organization`, `project`, `stack`, and optional `sub_stack` to identify candidates, including broader shared/general records as relevant. A missing `sub_stack` denotes no narrower specialization. For Standards, the required `category` array adds taxonomy labels for retrieving relevant subjects; it is not a second stack or a substitute for scope. For example, general React expectations can use `stack: frontend`, `category: [react]` without a sub-stack, while a HubSpot specialization can use `stack: frontend`, `sub_stack: hubspot`, `category: [react]`. Retrieving general React expectations should not automatically bring in every specialized HubSpot record.
+**Retrieval starts with the scoped artifact dimensions.** A consumer uses `organization`, `project`, `stack`, and `sub_stack` to identify candidates, including broader shared/general records as relevant. `sub_stack: general` denotes no narrower specialization. For Standards, the required `category` array adds taxonomy labels for retrieving relevant subjects; it is not a second stack or a substitute for scope. For example, general React expectations can use `stack: frontend`, `sub_stack: general`, `category: [react]`, while a HubSpot specialization can use `stack: frontend`, `sub_stack: hubspot`, `category: [react]`. Retrieving general React expectations should not automatically bring in every specialized HubSpot record.
 
 **Specialization uses the universal `inherits` relationship.** Standards carry identified `expectations`, so a descendant can add or replace individual expectations using the [shared merge rules](#artifact-inheritance). `related_standards` remains associative only; it does not imply inheritance.
 
@@ -91,7 +91,7 @@ The schema supplies structure and relationships, while consumers implement retri
 
 ### Deviations
 
-A Deviation records a **documented departure** from an otherwise applicable Standard. It may be recorded before formal approval or a supporting Decision exists. It does not create a new general Standard, and it is not inherently temporary or defective. It is scoped through `organization`, `project`, `stack`, and optional `sub_stack`, so the departure can apply to a particular engagement or context without changing the underlying Standard.
+A Deviation records a **documented departure** from an otherwise applicable Standard. It may be recorded before formal approval or a supporting Decision exists. It does not create a new general Standard, and it is not inherently temporary or defective. It is scoped through `organization`, `project`, `stack`, and `sub_stack`, so the departure can apply to a particular engagement or context without changing the underlying Standard.
 
 Each Deviation identifies exactly one `standard` by ID and requires a `reason` and a nonempty `items` collection. Optional `backed_by_decision` identifies a Decision that supports or formalizes the departure. Each item has a stable `id` and `description` explaining the proposed or agreed alternative; an optional `expectation` identifies the specific expectation within the referenced Standard. This is a meaningful cross-type relationship, not inheritance. Optional `notes` capture additional context.
 
@@ -101,7 +101,7 @@ Determining what the organization expects in a given situation requires examinin
 
 A Guide explains how to accomplish an activity rather than establishing authoritative expectations. It has an `objective` and identified, named `instructions` (each with `id`, `name`, and `instructions`); `is_ordered` defaults to `true`, meaning the sequence matters, and can be set to `false` for independently usable instructional elements. Optional `attachments` reference supporting materials. Guide instructions participate in the universal ID-based array merge: matching IDs identify the same instruction and their properties merge recursively; new IDs add instructions. Unless `is_ordered` is `false`, every instruction carries an integer `order`, and the resolved instructions are sequenced by it, not by their physical array positions. A child can change an inherited instruction's order or prose independently. New instructions must resolve to complete entries. The schema requires `order` on every instruction of an ordered Guide; that no two instructions share an order is beyond JSON Schema, so consumers check it and reject a duplicate rather than guessing.
 
-Guides inherit the same organization, project, stack, and optional sub-stack retrieval dimensions as other scoped artifacts. Optional `apply_when` adds natural-language circumstances for a human or agent to evaluate after candidate retrieval. Absence of `apply_when` means no additional applicability restriction beyond scope and the Guide's subject. Guides do not have `do_not_apply_when`.
+Guides inherit the same organization, project, stack, and sub-stack retrieval dimensions as other scoped artifacts. Optional `apply_when` adds natural-language circumstances for a human or agent to evaluate after candidate retrieval. Absence of `apply_when` means no additional applicability restriction beyond scope and the Guide's subject. Guides do not have `do_not_apply_when`.
 
 ### Ways of Working
 
@@ -115,7 +115,7 @@ Optional `guided_by_principles`, `informed_by_strategy`, and `stems_from_decisio
 
 A Reference captures reusable factual information about a subject, such as the behavior, capabilities, or constraints of a technology, platform, or system. It does not itself establish a Standard, record a Decision, or prescribe a procedure. Reference content is organized into a nonempty `items` collection; each item has a stable `id`, a `name` and a prose `description`, so an inheriting Reference can update or add one fact by ID without restating the rest. Keep each Reference focused on a coherent subject rather than accumulating unrelated facts.
 
-References inherit the organization, project, stack, and optional sub-stack dimensions of scoped artifacts. A required, nonempty `category` array provides additional taxonomy for retrieving references about a subject. Consumers can also follow optional `related_artifacts` associations to retrieve other relevant material. A related Reference remains independently meaningful; an association does not imply inheritance. References can use the optional universal `inherits` property if an author intentionally needs same-type specialization, but it is not required for ordinary reference relationships.
+References inherit the organization, project, stack, and sub-stack dimensions of scoped artifacts. A required, nonempty `category` array provides additional taxonomy for retrieving references about a subject. Consumers can also follow optional `related_artifacts` associations to retrieve other relevant material. A related Reference remains independently meaningful; an association does not imply inheritance. References can use the optional universal `inherits` property if an author intentionally needs same-type specialization, but it is not required for ordinary reference relationships.
 
 When information depends on a vendor version or other external circumstances, state those qualifications in the relevant item rather than presenting them as universally true. A Reference does not use Standard-style applicability rules to determine whether its facts govern work. When factual information affects a Standard or Guide, the relevant governing artifact must still be identified separately.
 
@@ -135,7 +135,24 @@ By default, each stored artifact must be valid against its artifact-type schema 
 | Array of objects identified by `id` | Add new IDs; matching IDs identify the same object, whose properties merge recursively |
 | Array of objects without `id`       | Child array replaces parent array                                                      |
 
-The child's `id`, `schema`, `inherits` and `validation_deferred` are structural metadata, not inherited payload values. A resolved artifact carries the child's `id`, `schema` and `inherits`, and no `validation_deferred`: once resolved, nothing about it is deferred. When validation is not deferred, all required fields must be present in the stored child. When it is deferred, missing required content must be supplied through resolution. A resolved artifact retains the child's identity and contract. Consumers should detect duplicate IDs within identified-item arrays rather than silently resolving ambiguity. A child's array of primitive values replaces its parent's, so a child can narrow a list as well as extend it, by stating the whole list it wants. `apply_when` follows the same rule: a child's conditions are its own, and a parent condition still applies to the child only where the child restates it. A `null` removes an inherited value, which lets a child drop an optional property such as `sub_stack`; it applies only in a deferred child, since a complete child's stored form is validated on its own and the schemas do not accept `null`. Nulling a required property leaves the resolved artifact incomplete, which fails.
+The child's `id`, `schema`, `inherits` and `validation_deferred` are structural metadata, not inherited payload values. A resolved artifact carries the child's `id`, `schema` and `inherits`, and no `validation_deferred`: once resolved, nothing about it is deferred. When validation is not deferred, all required fields must be present in the stored child. When it is deferred, missing required content must be supplied through resolution. A resolved artifact retains the child's identity and contract. Consumers should detect duplicate IDs within identified-item arrays rather than silently resolving ambiguity. A child's array of primitive values replaces its parent's, so a child can narrow a list as well as extend it, by stating the whole list it wants. `apply_when` follows the same rule: a child's conditions are its own, and a parent condition still applies to the child only where the child restates it. A `null` removes an inherited value, which lets a child drop an optional property such as a Standard's `notes`; it applies only in a deferred child, since a complete child's stored form is validated on its own and the schemas do not accept `null`. Nulling a required property leaves the resolved artifact incomplete, which fails.
+
+### Inheritance and scope
+
+Scope is judged on the resolved artifact. The scope fields are scalars, so a child that states one replaces its parent's, and one it leaves out is inherited.
+
+**A child cannot resolve to a broader scope than its parent's.** It cannot set `project` back to `shared`, or `sub_stack` back to `general`. That is a resolution error, like a cycle or a missing parent. Whether a child may move a stated value sideways — `project` from one project to another, or `stack` from `frontend` to `backend` — is still open.
+
+**A descendant stands in for its ancestors wherever it applies.** It applies when its scope matches the request and its `apply_when`, if any, holds; which is why standing in is settled after the applicability negotiation, not at scope matching. An ancestor is returned only where none of its descendants applies, since each of them already restates, changes or removes what the ancestor says.
+
+- A child for agents (`apply_when: An AI agent authored the change`) at its parent's scope is returned for an agent's change, and the parent for anyone else's.
+- A child at a narrower scope is returned where that scope matches, and the parent elsewhere.
+- Where two descendants both apply — siblings for agents and for urgent fixes, on an agent's urgent fix — both are returned, and the ancestor is not. They are reconciled like unrelated artifacts.
+- A child at its parent's scope with no `apply_when` always stands in, so the parent is never returned. That is valid, but its author should have edited the parent.
+
+**Artifacts not related by inheritance do not stand in for each other.** A general React Standard (`stack: frontend`, `sub_stack: general`, `category: [react]`) and a frontend React Standard with no `inherits` link both apply to a frontend React request, and both are returned. Retrieval still starts from scope, as [Standards: authoring and retrieval](#standards-authoring-and-retrieval) describes; these rules decide which records come back once several match.
+
+JSON Schema cannot check any of this, since it spans more than one artifact; the resolver does.
 
 ### Validation timing
 
@@ -161,11 +178,13 @@ Most artifacts describe practices or context that apply somewhere in particular.
 - `organization` — the `id` of a `socius-organization` artifact, or `shared`
 - `project` — the ID of the project the artifact pertains to, or `shared`
 - `stack` — the stack the artifact pertains to, or `general`
-- `sub_stack` — optional narrower technology or platform within the stack (for example, `hubspot` under `frontend`)
+- `sub_stack` — the narrower technology or platform within the stack (for example, `hubspot` under `frontend`), or `general`
 
-`organization`, `project` and `stack` are required on every scoped type; `sub_stack` is optional. **The three base scope fields are always stated, never inferred from absence** — an artifact that applies everywhere says so with `shared` / `shared` / `general` rather than by leaving the fields out.
+All four are required on every scoped type. **Scope is always stated, never inferred from absence** — an artifact that applies everywhere says so with `shared` / `shared` / `general` / `general` rather than by leaving the fields out. The values map onto folders, so what has no sub-stack sits in a `general` folder beside the sub-stack folders rather than among them.
 
-`organization` and `project` can name modeled Organization and Project artifacts, respectively, while the special value `shared` denotes unrestricted scope. `stack` and `sub_stack` remain free strings whose values are a matter of consumer convention; nothing here enumerates their valid values.
+`organization` and `project` can name modeled Organization and Project artifacts, respectively, while the special value `shared` denotes unrestricted scope, as `general` does for `stack` and `sub_stack`. `stack` and `sub_stack` remain free strings whose values are a matter of consumer convention; nothing here enumerates their valid values.
+
+**Each scope field narrows where an artifact applies**, on every scoped type. `stack: frontend` with `shared` / `shared` and `sub_stack: general` covers all of frontend; `sub_stack: react` covers frontend React; adding `project: X` covers how project X does frontend React. A field at `shared` or `general` does not narrow. `sub_stack` narrows even under `stack: general`: `general` / `macos` covers macOS whatever the stack. How scope interacts with inheritance is in [Inheritance and scope](#inheritance-and-scope).
 
 Scope is inherited and never redeclared: a type gets these fields by `allOf`-ref'ing `socius-scoped-artifact`, and no type defines them itself. Because concrete types close with `unevaluatedProperties: false`, the types that don't inherit scope can't carry it at all — an `organization` on a core principle is _rejected_, not ignored. Whether a kind of artifact can be scoped is therefore part of the contract, not a convention to be remembered.
 

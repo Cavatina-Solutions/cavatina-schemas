@@ -46,6 +46,9 @@ Test representative real material against Standards, Guides, Ways of Working, Re
 
 Unit tests cover independent and deferred completion, post-resolution validation at every level of a chain, identified-item merges, primitive-array replacement, null removal, same-type and same-version checks, missing parents, cycles, duplicate IDs and Guide order, for every artifact type. A child's `null` removes an inherited value, and a child's `apply_when` is the whole of its conditions. Still open: whether a separate stored-overlay pass adds anything beyond earlier diagnostics (see the analysed concern on deferred validation).
 
+Decide whether a child that moves a stated scope value sideways (`project` a to b, `stack`
+`frontend` to `backend`) is a resolution error, as resolving to a broader scope is.
+
 ### Define deviation approval workflow and migration guidance
 
 **Depends on:** Deviation schema
@@ -73,6 +76,16 @@ Coordinate schema links, folder layout, and terminology updates in the Practices
 ---
 
 ## In progress
+
+### Publish Pages without the private submodule
+
+**Depends on:** the Pages source switched from the branch to GitHub Actions
+
+**Relates to:** `.github/workflows/pages.yml`; work item "Document hosting and publishing"
+
+The branch-based Pages build always fetches submodules and fails on the private
+`socius-artifacts`. `pages.yml` builds the same Jekyll site from a checkout without submodules and
+deploys it. It is not yet committed, and the old build keeps failing until the source is switched.
 
 ---
 

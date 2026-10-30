@@ -6,6 +6,21 @@ Anything noticed that might be a problem. Status is the section a concern sits i
 
 ## Raised
 
+---
+
+## Analysed
+
+### Existing scoped artifacts without `sub_stack` now fail
+
+**Relates to:** `socius-scoped-artifact.sub_stack`; work item "Update Practices indexes and
+migration guidance"
+
+`sub_stack` is required, with `general` for no specialization. Any scoped artifact already
+written without it, in Practices or elsewhere, fails validation against the published v1 until it
+states `sub_stack: general`.
+
+**Outcome:** unfounded. No scoped artifacts have been written against these contracts yet.
+
 ### Records cite tests that are not in the repo
 
 **Relates to:** work item "Decide long-term contract testing boundary"
@@ -14,9 +29,8 @@ The Done item "Verify and review the Socius schema feature branch" and the conce
 item identity point at tests under `tests/unit/`, which were left out of `main` while that
 boundary is decided.
 
----
-
-## Analysed
+**Outcome:** real. The records are true of the tests, not of `main`; they follow the tests to
+wherever that work item puts them, and are corrected then.
 
 ### A Reference can link to a type that does not exist
 

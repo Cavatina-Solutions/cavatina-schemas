@@ -37,7 +37,7 @@ to broader ones without knowing the internals of a particular Socius implementat
 
 Domain design therefore includes the information and relationships needed for retrieval,
 applicability, and resolution. For example, scoped artifacts declare their organization,
-project, stack, and optional sub-stack; Standards also provide category-based retrieval and
+project, stack, and sub-stack; Standards also provide category-based retrieval and
 explicit expectation inheritance. Natural-language applicability conditions can require human
 or agent judgment. These distinctions must be documented clearly enough that different
 consumers can apply the same domain rules.

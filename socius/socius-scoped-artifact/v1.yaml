@@ -10,6 +10,7 @@ required:
   - organization
   - project
   - stack
+  - sub_stack
 properties:
   organization:
     type: string
@@ -22,4 +23,4 @@ properties:
     description: Either 'general' or the stack that the artifact pertains to.
   sub_stack:
     type: string
-    description: Optional narrower technology or platform within the declared stack; absent when no specialization is needed.
+    description: Either 'general' or the narrower technology or platform within the declared stack that the artifact pertains to.
