@@ -46,9 +46,9 @@ type. It belongs to settling the v1 contracts.
 
 **Relates to:** `socius/index.md` → "Artifact inheritance"
 
-**Outcome:** resolved. A child's array of primitive values replaces its parent's, so a child can
-narrow a list by stating the shorter one. `apply_when` follows the same rule: a child's conditions
-are its own. The index, the future notes and the tests say so.
+**Outcome:** resolved. A supplied array of primitive values replaces the inherited array, so a
+child can narrow a list by stating the shorter one. Omitting `apply_when` inherits the parent's
+conditions; supplying an array replaces them. The index and future notes describe both cases.
 
 ### A resolved artifact still says its validation is deferred
 
@@ -135,9 +135,10 @@ consumers reject a duplicate, and gaps are permitted.
 **Relates to:** work item "Review inheritance validation and applicability semantics"
 
 **Outcome:** the fixtures exist: independent and deferred completion are tested for every type,
-and `apply_when` for Standards and Ways of Working. A child's `apply_when` replaces its parent's,
-and a child's `null` removes an inherited value. How several conditions in one `apply_when`
-combine is left to the applicability negotiation.
+and `apply_when` for Standards and Ways of Working. A supplied `apply_when` array replaces the
+parent's conditions; an omitted property inherits them. A deferred child's `null` removes an
+inherited value. How several conditions in one resolved `apply_when` combine is left to the
+applicability negotiation.
 
 ### HWC toolchain enforcement remains partly outside the current Toolchain contract
 
