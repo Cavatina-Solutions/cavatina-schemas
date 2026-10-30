@@ -45,6 +45,10 @@ properties:
           minLength: 1
           description: Substantive expectation, including relevant qualifications where needed.
       additionalProperties: false
+  rationale:
+    type: string
+    minLength: 1
+    description: Why this Standard establishes its expectations, including the reasoning and intended benefits behind the approach.
   related_standards:
     type: array
     items:
