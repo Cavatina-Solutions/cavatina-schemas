@@ -56,7 +56,7 @@ Neither base closes with `unevaluatedProperties`, and neither should. A base tha
 | `socius-reference`         |   ✓    | Reusable factual information organized into named items                       |
 | `socius-toolchain`         |   ✓    | Required tools, version policy, and permitted exceptions                      |
 | `socius-term`              |   ✓    | A defined `term` and its `definition`                                         |
-| `socius-alias`             |   ✓    | An alternate name that `resolves_to` another artifact                         |
+| `socius-alias`             |   ✓    | An alternate name that `resolves_to` a Term, Organization, Person, or Project                         |
 | `socius-project`           |        | Project identity, purpose, foundational context, and associated resources     |
 | `socius-organization`      |        | A named organization and its `relationships` to other organizations           |
 | `socius-person`            |        | A named person and their organizational `affiliations`                        |
@@ -73,7 +73,7 @@ Each defines the structure unique to its kind of knowledge — a principle has a
 
 Roughly upstream to downstream: principles and operating context feed strategy; strategy drives goals and decisions; decisions produce standards; standards express the resulting expectations.
 
-The Terminology artifact types are **vocabulary**. `socius-term` and `socius-alias` record what a word means and what a shorthand expands to; `socius-organization` and `socius-person` name the entities those words refer to. They're knowledge like everything else here — the difference is structural. Other artifact types can express domain-specific influences or parentage, but those relationships do not automatically imply inheritance. Vocabulary derives from nothing and feeds nothing. It's what the rest is written in terms of.
+The Terminology artifact types are **vocabulary**. `socius-term` records what a word means, while `socius-alias` records an alternate name for a Term, Organization, Person, or Project; `socius-organization` and `socius-person` name the entities those words refer to. They're knowledge like everything else here — the difference is structural. Other artifact types can express domain-specific influences or parentage, but those relationships do not automatically imply inheritance. Vocabulary derives from nothing and feeds nothing. It's what the rest is written in terms of.
 
 ### Standards: authoring and retrieval
 

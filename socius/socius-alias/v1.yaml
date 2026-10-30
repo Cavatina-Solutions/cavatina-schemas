@@ -17,7 +17,7 @@ properties:
     description: Alternate name, abbreviation, acronym, codename, or shorthand being defined.
   resolves_to:
     type: object
-    description: Terminology artifact represented by the alias.
+    description: Artifact represented by the alias (Term, Organization, Person, or Project).
     required:
       - type
       - id
@@ -28,9 +28,10 @@ properties:
           - socius-organization
           - socius-person
           - socius-term
-        description: Socius artifact type of the Terminology artifact represented by the alias, without a version.
+          - socius-project
+        description: Socius artifact type represented by the alias, without a version.
       id:
         type: string
-        description: ID of the Terminology artifact represented by the alias.
+        description: ID of the artifact represented by the alias.
     additionalProperties: false
 unevaluatedProperties: false
